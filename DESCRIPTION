@@ -1,0 +1,36 @@
+Package: staticRef
+Type: Package
+Title: Reference Classes with Static and Private Variables
+Version: 0.1.0
+Author: Andrew Redd
+Maintainer: Andrew Redd <andrew.redd@hsc.utah.edu>
+Description: Provides the support for reference classes that can contain
+   static variables (variables that are common to all objects),
+   static const variables ad private methods (methods that are hidden 
+   from the public interface, but not necessarily inaccessible).
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Depends: R(>= 3.5.0), methods
+Imports: 
+  assertthat,
+  purrr,
+  rlang
+Suggests:
+  testthat
+Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace"))
+RoxygenNote: 6.1.0.9000
+VignetteBuilder: knitr
+Remotes:
+    klutometis/roxygen,
+    r-lib/pkgload
+Collate:
+    'TypedEnvironment.R'
+    'static_variables.R'
+    'Class-Vector.R'
+    'utils.R'
+    'MethodsLibrary.R'
+    'private_methods.R'
+    'static_methods.R'
+    'ExtendedRefClass.R'
+    'util-insert_parent_env.R'
