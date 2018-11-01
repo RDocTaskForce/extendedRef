@@ -2,6 +2,28 @@
 
 
 # MethodsLibrary ----------------------------------------------------------
+
+
+#' @title Methods Library
+#' @description
+#' A methods library is a container for methods of a specific type.
+#' All objects in the library should be functions of type `method.type`.
+#' One exception is made for objects that points back to the 
+#' library object, ie. a self referential object.
+#' 
+#' @usage MethodsLibrary(methods, method.type, method.parent, parent, .lock)
+#' 
+#' @param methods The list of methods to include in the library.  
+#'                Methods will be converted to the appropriate type automatically.
+#' @param method.type The type of method expected, the type should inherit from 'function'.
+#' @param method.parent The parent environment for methods within the library.
+#'                      Defaults to the library environment itself.
+#' @param parent The parent environment for the library.
+#'               Defaults to the calling frame.
+#' @param .lock A logical flag indicating if the library is to be locked and 
+#'              prevent adding or changing definitions.
+#'              Default is to lock if methods are provided.
+#' @export
 MethodsLibrary <- 
 setClass( 'MethodsLibrary'
         , contains = 'environment'
@@ -32,8 +54,14 @@ function(.Object
         , methods=list()
         , method.type='refMethodDef'
         , method.parent=as.environment(.Object)
+        , parent = NULL
+        , .lock = length(methods) > 0L
         ){
     .Object <- callNextMethod(.Object)
+    if (!is.null(parent) && assert_that(is.environment(parent)))
+        parent.env(.Object@.xData) <- parent
+    else 
+        parent.env(.Object@.xData) <- parent.frame(1L)
     assert_that(is.string(method.type))
     .Object@method.type <- method.type
     if (!is.list(methods)){
@@ -52,6 +80,7 @@ function(.Object
         environment(method) <- method.parent
         assign(name, method, envir = .Object@.xData)
     }
+    if (.lock) lockEnvironment(.Object@.xData, bindings = TRUE)
     return(.Object)
 })
 if(FALSE){#@testing 

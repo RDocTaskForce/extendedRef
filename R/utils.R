@@ -1,3 +1,7 @@
+#' @import assertthat
+#' @import methods
+#' @importFrom stats setNames
+
 s <- function( .Data, ...){
     new.attr <- list(...)
     if (is.null(names(new.attr)))
@@ -31,6 +35,16 @@ function( x                 #< vector to make into a comma list
     else
         return(paste(x, c(rep(sep, length(x)-2), sep.last, terminator), sep='', collapse=''))
 }
+ngettextf <-
+    function( n
+              , msg1
+              , msg2
+              , ...
+              , domain=NULL
+    ){
+        if (n<=1) gettextf(msg1, ..., domain = domain)
+        else gettextf(msg2, ..., domain = domain)
+    }
 
 all_inherit <- function(lst, what, label=NULL){
     act <- testthat::quasi_label(rlang::enquo(lst), label)
@@ -72,7 +86,7 @@ set_environment <- function(fun, envir){
 }
 
 is_valid <- function(object, complete=FALSE){
-    valid <- is_valid(object, test=TRUE, complete=complete)
+    valid <- validObject(object, test=TRUE, complete=complete)
     if(isTRUE(valid)) return(TRUE)
     else return(s(FALSE, msg=valid))
 }
@@ -83,6 +97,17 @@ are_valid <-
             if (isTRUE(simplify) || all(valid)) return(simplify2array(valid))
         else return(valid)
     }
+are <- function(lst, class2){
+    purrr:::map_lgl(lst, is, class2)
+}
+if(FALSE){#@testing
+    lst <- list('a', 1L, TRUE)
+    
+    expect_true(all(are(lst, 'ANY')))
+    expect_identical(are(lst, 'character'), c(T,F,F))
+    expect_identical(are(lst, 'integer'), c(F,T,F))
+    expect_identical(are(lst, 'numeric'), c(F,T,F))
+}
 
 
 ._not_implemented <- function(object, ...)
@@ -98,3 +123,5 @@ are_valid <-
 
 
 setInitialize <- function(...)setMethod(f = 'initialize', ...)
+
+assert_that <- assertthat::assert_that

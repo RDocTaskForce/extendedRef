@@ -3,13 +3,14 @@
 #' @include static_variables.R
 
 # Optional Classes --------------------------------------------------------
+#' @importClassesFrom methods NULL
 make_class_optional <-
 function( className
         , name = paste0('optional-', className)
         , where = topenv(parent.frame())
         ){
-    setClassUnion(name, c('NULL', className))
-    setClass(name)
+    setClassUnion(name, className)
+    setIs('NULL', name)
 }
 make_class_optional('classStaticEnv')
 make_class_optional('privateMethodsLibrary')
@@ -95,14 +96,19 @@ function(.Object, ...){
     if (!is.null(classDef@static.const))
         parent <- insert_parent_env(.Object, classDef@static.const)
     if (!is.null(static <- classDef@static)){
-        if (!static$static.initialized && is.function(static@initializer))
+        if (!static$static.initialized && is.function(static@initializer)) {
             static@initializer()
+            static$static.initialized <- TRUE
+        }
         parent <- insert_parent_env(.Object, classDef@static)
     }
     if (!is.null(classDef@static.methods)){
         parent <- insert_parent_env(.Object, classDef@static.methods)
-        if (exists('static_initialize', envir = classDef@static.methods, inherits = FALSE))
+        if (exists('static_initialize', envir = classDef@static.methods, inherits = FALSE)) {
             classDef@static.methods$static_initialize()
+            if (is.environment(static) && exists('static.initialized', static))
+                static$static.initialized <- TRUE
+        }
     }
     if (length(classDef@private.classes) > 0L){
         private.env <- new( 'TypedEnvironment'
@@ -128,13 +134,18 @@ function(.Object, ...){
 
 
 
-# extendedRefObjectGenerator ---------------------------------------------
+# StaticTriad ---------------------------------------------
+#' The Static Triad
+#' 
+#' The static triad consists of a const environment for constants, 
+#' a vars environment for variables, and a methods environment for methods.
 setRefClass( "StaticTriad"
            , fields = c( const    = 'optional-StaticConstEnv'
                        , vars     = 'optional-classStaticEnv'
                        , methods  = 'optional-StaticMethods'
                        )
            )
+#' @describeIn StaticTriad-class makes the three environments act as one.
 setMethod('$', 'StaticTriad', function(x, name){
     tryCatch( eval(substitute(callNextMethod(x, name)))
             , error = function(e){
@@ -146,6 +157,7 @@ setMethod('$', 'StaticTriad', function(x, name){
                 stop(e)
             })
 })
+#' @describeIn StaticTriad-class Make assignments easier but protects constants and methods.
 setMethod('$<-', 'StaticTriad', function(x, name, value){
     what <- substitute(name)
     if (is.symbol(what)) 
@@ -183,10 +195,28 @@ if(FALSE){#@testing
     expect_error(x$a <- 2, "is a static const value and cannot be changed")
     expect_error(x$b <- TRUE, "is not a valid static variable.")
 }
+#' @describeIn StaticTriad-class coerce to StaticTriad
+setAs('extendedRefClassDefinition', 'StaticTriad', function(from){
+    new('StaticTriad', const   = from@static.const
+                     , vars    = from@static
+                     , methods = from@static.methods
+                     )
+})
 
-
+# Extended Reference Generators --------
+#' Extended Reference Generators
+#' 
+#' A `refObjectGenerator` is be turned into a generator
+#' for extended reference classes by replacing the `generator` slot 
+#' with a `extendedRefGeneratorSlot` object and the `def` field in the 
+#' `extendedRefGeneratorSlot` with a `extendedRefClassDefinition` object.
+#' 
+#' The `extendedRefGeneratorSlot` adds the `static` field holding a 
+#' `StaticTriad` object to access the static variables and methods without 
+#' needing to access them through an instance of the class.
 setRefClass('extendedRefGeneratorSlot', contains='refGeneratorSlot'
            , fields = c(static='StaticTriad'))
+#' @rdname 
 setClass( 'extendedRefObjectGenerator', contains = c('refObjectGenerator')
         , slots = c( static = 'StaticTriad'))
 setInitialize('extendedRefObjectGenerator', 
@@ -196,6 +226,7 @@ function(.Object, ...){
     .Object@generator$static <- .Object@static
     .Object
 })
+# setAs('extendedRefObjectGenerator', '')
 if(FALSE){#@testing
     super <- setRefClass('test')
     .Object <- new('extendedRefObjectGenerator', super)
@@ -205,6 +236,19 @@ if(FALSE){#@testing
 }
 
 # setExtendedRefClass ------------------------------------------------
+
+#' Create an Extended Reference Class.
+#' 
+#' Extended Reference classes are reference classes that support 
+#' static and private methods and variables.
+#' 
+#' @inheritParams setRefClass
+#' @param private private variables
+#' @param static static variables
+#' @param static.const static constants 
+#' @param private.methods Private Methods
+#' @param static.methods Static Methods
+#' 
 #' @export
 setExtendedRefClass <-
 function( Class
@@ -238,25 +282,25 @@ function( Class
             else warning(e)
         })
 
-    generator@generator <- new('extendedRefGeneratorSlot', generator@generator)
+    # generator@generator <- new('extendedRefGeneratorSlot', generator@generator)
     
     ref.class <- generator$def
 
     parent <- parent.env(ref.class@refMethods)
     if (length(static.const)) {
         static.const <- static_const(static.const, className=Class)
-        generator@generator$static$const <- static.const
+        # generator@generator$static$const <- static.const
         parent <- static.const@.xData
     } else static.const <- NULL
     if (length(static)) {
-        generator@generator$static$vars <- 
+        # generator@generator$static$vars <- 
         static <- new_static_env( static, className = Class, parent=parent
-                                , initialized.state = 'static_initialize' %in% names(static.methods)
+                                , initialized.state = 'static_initialize' %!in% names(static.methods)
                                 )
         parent <- static@.xData
     } else static <- NULL
     if (length(static.methods)) {
-        generator@generator$static$methods <- 
+        # generator@generator$static$methods <- 
         static.methods <- static_methods( static.methods
                                         , parent=parent
                                         , className = Class
@@ -269,11 +313,18 @@ function( Class
                    )
     }
     if (length(private.methods)) {
-        private.library <-privateMethodsLibrary(private.methods, parent, Class)
+        private.library <-privateMethodsLibrary( methods = private.methods
+                                               , parent=parent
+                                               , className=Class
+                                               )
         parent <- private.library@.xData
     } else private.library <- NULL
     parent.env(ref.class@refMethods) <- parent
-
+    
+    triad <- new('StaticTriad', const   = static.const
+                              , vars    = static
+                              , methods = static.methods
+                              )
     ExtendedDef <- new( 'extendedRefClassDefinition'
                       , ref.class
                       , private.classes = private
@@ -283,9 +334,22 @@ function( Class
                       , static.methods  = static.methods
                       )
     checkExtendedDef(ExtendedDef)
-    generator@generator$def <- ExtendedDef
+    # generator@generator$def <- ExtendedDef
+    xgenslot <- new( 'extendedRefGeneratorSlot'
+                   , generator@generator
+                   , static=triad
+                   , def = ExtendedDef)
+    # ref.class@generator <- 
+    xgen <- 
+        new( 'extendedRefObjectGenerator'
+           , generator
+           , static    = triad
+           , generator = xgenslot
+           , className = Class
+           , package   = generator@package
+           )
     assignClassDef(Class, ExtendedDef, where)
-    invisible(generator)
+    invisible(xgen)
 }
 if(FALSE){# Development
     generator <- setRefClass('test')
@@ -505,6 +569,8 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
     expect_identical(parent.env(sm    ), static@.xData)
     expect_identical(parent.env(static), const@.xData)
     
+    expect_false(generator$static$static.initialized)
+    
     object <- generator(TRUE, FALSE)
     expect_is(object, 'testStaticClass')
     expect_is(object, 'ExtendedRefClass')
@@ -522,21 +588,10 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
 
     expect_true(static$static.initialized)
 
-    # expect_identical(getClassStaticEnv(object), static)
-
     expect_identical(static$.count, 1L)
     expect_identical(object$count, 1L)
 
     expect_identical(get('element', object), 'logical')
-
-    static.const <- parent.env(static.env)
-    expect_equal( environmentName(static.const)
-                , "testStaticClass Static Constant Environment")
-    expect_equal( environmentName(static.env)
-                , "testStaticClass Static Environment")
-    expect_error( static.const$msg <- 'Hello world'
-                , "cannot add bindings to a locked environment")
-
     expect_valid(object)
 
     expect_identical(object$append(FALSE, FALSE, TRUE), object)
@@ -545,7 +600,7 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
     expect_error(object$append(0L), "bad element at 1")
     expect_length(object$., 5L)
 
-    removeClass(generator@className, where = generator@package)
+    expect_true(removeClass(generator@className, where = generator@package))
 }
 
 checkExtendedDef <- function(ExtendedDef){
@@ -578,9 +633,9 @@ checkExtendedDef <- function(ExtendedDef){
                                       , names(ExtendedDef@static.methods)
                                       )}
     for (method in as.list(ExtendedDef@private.library))
-        methods:::.checkFieldsInMethod( method, writable.fields, method.names)
+        methods:::.checkFieldsInMethod( method, writable.fields, all.methods)
     for (method in as.list(ExtendedDef@refMethods))
-        methods:::.checkFieldsInMethod( method, writable.fields, method.names)
+        methods:::.checkFieldsInMethod( method, writable.fields, all.methods)
     invisible(ExtendedDef)
 }
 

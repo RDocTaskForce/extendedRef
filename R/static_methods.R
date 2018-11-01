@@ -1,11 +1,16 @@
 #' @include private_methods.R
 
 
-#' Static Methods
-#' 
+#' @title Static Methods
+#' @description
 #' Static methods denote functions that are intended to act on 
 #' class static variables only.  They inherit from refMethodDef,
 #' and use the same initializers and methods.  
+#' 
+#' @usage static_methods(methods, parent, className)
+#' 
+#' @inheritParams MethodsLibrary
+#' 
 #' @export
 setClass('StaticMethod', contains = 'refMethodDef')
 if(FALSE){#@testing
@@ -19,7 +24,7 @@ if(FALSE){#@testing
     expect_identical(environment(method), environment(def))
 }
 
-#' @rdname StaticMethod
+#' @rdname StaticMethod-class
 #' @export
 static_methods <-
 setClass('StaticMethods'

@@ -15,10 +15,12 @@ Depends: R(>= 3.5.0), methods
 Imports: 
   assertthat,
   purrr,
-  rlang
+  rlang,
+  stats
 Suggests:
-  testthat
-Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace"))
+  testthat,
+  knitr
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace"))
 RoxygenNote: 6.1.0.9000
 VignetteBuilder: knitr
 Remotes:
@@ -27,7 +29,6 @@ Remotes:
 Collate:
     'TypedEnvironment.R'
     'static_variables.R'
-    'Class-Vector.R'
     'utils.R'
     'MethodsLibrary.R'
     'private_methods.R'
