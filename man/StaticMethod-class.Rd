@@ -6,9 +6,6 @@
 \alias{StaticMethods-class}
 \alias{static_methods}
 \title{Static Methods}
-\usage{
-static_methods(methods, parent, className)
-}
 \description{
 Static methods denote functions that are intended to act on
 class static variables only.  They inherit from refMethodDef,

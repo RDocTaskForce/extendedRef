@@ -21,7 +21,7 @@ make_class_optional('StaticConstEnv')
 #' Extended Reference Definitions
 #' 
 #' The defintion for an extended reference class extends the 
-#' refClassRepresentation.  Of note is that the definition holds
+#' [refClassRepresentation][methods::setRefClass()].  Of note is that the definition holds
 #' the private methods library, the constant methods library, the 
 #' static const environment and the static environment for all
 #' objects of the class.
@@ -139,13 +139,24 @@ function(.Object, ...){
 #' 
 #' The static triad consists of a const environment for constants, 
 #' a vars environment for variables, and a methods environment for methods.
+#'
+#' @param x       A StaticTriad Object
+#' @param name    The name of the constant, variable, or method
+#' @param value   The replacement value for variables only.
+#'
+#' @section Methods:
+#'  * `$` is definded to make all variables, constants and 
+#'        methods visible through the single object.
+#'  * `$<-` Does the same but protects constants and methods 
+#'        from being overwritten.
+StaticTriad <- 
 setRefClass( "StaticTriad"
            , fields = c( const    = 'optional-StaticConstEnv'
                        , vars     = 'optional-classStaticEnv'
                        , methods  = 'optional-StaticMethods'
                        )
            )
-#' @describeIn StaticTriad-class makes the three environments act as one.
+#' @rdname StaticTriad-class
 setMethod('$', 'StaticTriad', function(x, name){
     tryCatch( eval(substitute(callNextMethod(x, name)))
             , error = function(e){
@@ -157,7 +168,7 @@ setMethod('$', 'StaticTriad', function(x, name){
                 stop(e)
             })
 })
-#' @describeIn StaticTriad-class Make assignments easier but protects constants and methods.
+#' @rdname StaticTriad-class
 setMethod('$<-', 'StaticTriad', function(x, name, value){
     what <- substitute(name)
     if (is.symbol(what)) 
@@ -206,14 +217,15 @@ setAs('extendedRefClassDefinition', 'StaticTriad', function(from){
 # Extended Reference Generators --------
 #' Extended Reference Generators
 #' 
-#' A `refObjectGenerator` is be turned into a generator
+#' A [refObjectGenerator][methods::setRefClass()] is turned into a generator
 #' for extended reference classes by replacing the `generator` slot 
-#' with a `extendedRefGeneratorSlot` object and the `def` field in the 
+#' with an `extendedRefGeneratorSlot` object and the `def` field in the 
 #' `extendedRefGeneratorSlot` with a `extendedRefClassDefinition` object.
 #' 
 #' The `extendedRefGeneratorSlot` adds the `static` field holding a 
-#' `StaticTriad` object to access the static variables and methods without 
+#' [StaticTriad] object to access the static variables and methods without 
 #' needing to access them through an instance of the class.
+extendedRefGeneratorSlot <- 
 setRefClass('extendedRefGeneratorSlot', contains='refGeneratorSlot'
            , fields = c(static='StaticTriad'))
 #' @rdname 
@@ -242,12 +254,14 @@ if(FALSE){#@testing
 #' Extended Reference classes are reference classes that support 
 #' static and private methods and variables.
 #' 
-#' @inheritParams setRefClass
-#' @param private private variables
-#' @param static static variables
+#' @param Class The class name
+#' @param contains,fields,methods,where see [methods::setRefClass()]
+#' @param private Character vector indicating the classes of the private variables.
+#' @param static Character vector indicating the classes of the static variables.
 #' @param static.const static constants 
-#' @param private.methods Private Methods
-#' @param static.methods Static Methods
+#' @param private.methods List of private methods.
+#' @param static.methods List of static methods.
+#' @inheritDotParams methods::setRefClass
 #' 
 #' @export
 setExtendedRefClass <-
@@ -270,37 +284,31 @@ function( Class
     withCallingHandlers({
         generator <- 
             setRefClass( Class
-                         , fields = fields
-                         , contains = c('ExtendedRefClass', contains)
-                         , methods = methods
-                         , where = where
-                         , ...)
+                       , fields = fields
+                       , contains = c('ExtendedRefClass', contains)
+                       , methods = methods
+                       , where = where
+                       , ...)
         }
         , warning = function(e){
             if (grepl('non-local assignment to non-field names (possibly misspelled?)', e$message, fixed=TRUE))
                 invokeRestart("muffleWarning")
             else warning(e)
         })
-
-    # generator@generator <- new('extendedRefGeneratorSlot', generator@generator)
-    
     ref.class <- generator$def
 
     parent <- parent.env(ref.class@refMethods)
     if (length(static.const)) {
         static.const <- static_const(static.const, className=Class)
-        # generator@generator$static$const <- static.const
         parent <- static.const@.xData
     } else static.const <- NULL
     if (length(static)) {
-        # generator@generator$static$vars <- 
         static <- new_static_env( static, className = Class, parent=parent
                                 , initialized.state = 'static_initialize' %!in% names(static.methods)
                                 )
         parent <- static@.xData
     } else static <- NULL
     if (length(static.methods)) {
-        # generator@generator$static$methods <- 
         static.methods <- static_methods( static.methods
                                         , parent=parent
                                         , className = Class
@@ -334,12 +342,10 @@ function( Class
                       , static.methods  = static.methods
                       )
     checkExtendedDef(ExtendedDef)
-    # generator@generator$def <- ExtendedDef
     xgenslot <- new( 'extendedRefGeneratorSlot'
                    , generator@generator
                    , static=triad
                    , def = ExtendedDef)
-    # ref.class@generator <- 
     xgen <- 
         new( 'extendedRefObjectGenerator'
            , generator
@@ -628,14 +634,14 @@ checkExtendedDef <- function(ExtendedDef){
                , msg = "Method names cannot appear in more than one scope.")
     
     for (method in as.list(ExtendedDef@static.methods)){
-        methods:::.checkFieldsInMethod( method
-                                      , names(ExtendedDef@static)
-                                      , names(ExtendedDef@static.methods)
-                                      )}
+        .checkFieldsInMethod( method
+                            , names(ExtendedDef@static)
+                            , names(ExtendedDef@static.methods)
+                            )}
     for (method in as.list(ExtendedDef@private.library))
-        methods:::.checkFieldsInMethod( method, writable.fields, all.methods)
+        .checkFieldsInMethod( method, writable.fields, all.methods)
     for (method in as.list(ExtendedDef@refMethods))
-        methods:::.checkFieldsInMethod( method, writable.fields, all.methods)
+        .checkFieldsInMethod( method, writable.fields, all.methods)
     invisible(ExtendedDef)
 }
 

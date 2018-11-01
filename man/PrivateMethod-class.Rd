@@ -8,11 +8,6 @@
 \alias{objectPrivateMethods-class}
 \alias{private_methods}
 \title{Private Methods Library}
-\usage{
-\S4method{initialize}{privateMethodsLibrary}( methods = list(), parent=NULL
-                            , className=NULL, .lock=TRUE)
-       \S4method{initialize}{objectPrivateMethods}(thing, library)
-}
 \arguments{
 \item{thing}{an object of class \code{className}.}
 

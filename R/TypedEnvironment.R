@@ -5,15 +5,12 @@
 #' They provide the foundation for static and private variables of the 
 #' extended reference classes.
 #' 
-#' @usage new("TypedEnvironment", classes = character(0), parent = baseenv()
-#'                              , initializer = NULL, initialize.content = FALSE
-#'                              , self.name = character())
 #' 
-#' @param classes A named vector indicating the appropriate classes for objects.
-#' @param parent  The parent of the environment
-#' @param initializer an optional function that can be specified to initialize the values.
-#' @param initialize.content a logical flag indicating if the initializer function should be run immediately.
-#' @param self.name If specified will assign to this variable a copy of the resulting object.
+#' @slot classes A named vector indicating the appropriate classes for objects.
+#' @slot initializer an optional function that can be specified to initialize the values.
+# @param parent  The parent of the environment
+# @param initialize.content a logical flag indicating if the initializer function should be run immediately.
+# @param self.name If specified will assign to this variable a copy of the resulting object.
 #' 
 #' @export
 setClass( "TypedEnvironment", contains = 'environment'

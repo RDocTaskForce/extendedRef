@@ -11,18 +11,19 @@
 #' One exception is made for objects that points back to the 
 #' library object, ie. a self referential object.
 #' 
-#' @usage MethodsLibrary(methods, method.type, method.parent, parent, .lock)
-#' 
-#' @param methods The list of methods to include in the library.  
-#'                Methods will be converted to the appropriate type automatically.
-#' @param method.type The type of method expected, the type should inherit from 'function'.
-#' @param method.parent The parent environment for methods within the library.
-#'                      Defaults to the library environment itself.
-#' @param parent The parent environment for the library.
-#'               Defaults to the calling frame.
-#' @param .lock A logical flag indicating if the library is to be locked and 
-#'              prevent adding or changing definitions.
-#'              Default is to lock if methods are provided.
+#' @slot method.type A string giving the type of method expected, 
+#'                   the type should inherit from 'function', and 
+#'                   preferrably from [refMethodDef][methods::refMethodDef-class].
+# @slot  methods The list of methods to include in the library.  
+#                Methods will be converted to the appropriate type automatically.
+# @slot method.parent The parent environment for methods within the library.
+#                     Defaults to the library environment itself.
+# @slot parent The parent environment for the library.
+#              Defaults to the calling frame.
+# @slot .lock A logical flag indicating if the library is to be locked and 
+#             prevent adding or changing definitions.
+#             Default is to lock if methods are provided.
+#'             
 #' @export
 MethodsLibrary <- 
 setClass( 'MethodsLibrary'

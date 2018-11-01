@@ -98,7 +98,7 @@ are_valid <-
         else return(valid)
     }
 are <- function(lst, class2){
-    purrr:::map_lgl(lst, is, class2)
+    purrr::map_lgl(lst, is, class2)
 }
 if(FALSE){#@testing
     lst <- list('a', 1L, TRUE)
@@ -124,4 +124,7 @@ if(FALSE){#@testing
 
 setInitialize <- function(...)setMethod(f = 'initialize', ...)
 
-assert_that <- assertthat::assert_that
+.checkFieldsInMethod <- 
+    get('.checkFieldsInMethod', asNamespace('methods'))
+
+

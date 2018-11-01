@@ -16,17 +16,6 @@ setAs('classGeneratorFunction', 'classRepresentation', function(from)getClass(fr
 #' instances of a class.  Static Const variables are accessible to 
 #' all class objects but cannot be changed.
 #' 
-#' @usage 
-#'     new_static_env(...)
-#'     \S4method{initialize}{classStaticEnv}(classes=character(), parent  = baseenv()
-#'                   , initializer = NULL, initialize.content = FALSE
-#'                   , self.name = 'static', initialized.name = 'static.initialized'
-#'                   , initialized.state = is.null(initializer)
-#'                   , className = NULL
-#'                   )
-#'     static_const(...)
-#'     \S4method{initialize}{StaticConstEnv}(content=list(), parent=NULL, className = NULL)
-#' 
 #' @inheritParams TypedEnvironment
 #' @param initialized.name Name of the variable which indicates if the environment has been initialized or not.
 #' @param initialized.state The initial state of the initialized variable named in `initialized.name`

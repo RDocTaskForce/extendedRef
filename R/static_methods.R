@@ -7,8 +7,6 @@
 #' class static variables only.  They inherit from refMethodDef,
 #' and use the same initializers and methods.  
 #' 
-#' @usage static_methods(methods, parent, className)
-#' 
 #' @inheritParams MethodsLibrary
 #' 
 #' @export

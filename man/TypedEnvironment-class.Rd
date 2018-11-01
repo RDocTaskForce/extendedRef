@@ -4,25 +4,17 @@
 \name{TypedEnvironment-class}
 \alias{TypedEnvironment-class}
 \title{Typed Environments}
-\usage{
-new("TypedEnvironment", classes = character(0), parent = baseenv()
-                             , initializer = NULL, initialize.content = FALSE
-                             , self.name = character())
-}
-\arguments{
-\item{classes}{A named vector indicating the appropriate classes for objects.}
-
-\item{parent}{The parent of the environment}
-
-\item{initializer}{an optional function that can be specified to initialize the values.}
-
-\item{initialize.content}{a logical flag indicating if the initializer function should be run immediately.}
-
-\item{self.name}{If specified will assign to this variable a copy of the resulting object.}
-}
 \description{
 Typed environments are environments that enforce objects to have a specified class.
 They essentially work similar to reference classes but without as much overhead.
 They provide the foundation for static and private variables of the
 extended reference classes.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{classes}}{A named vector indicating the appropriate classes for objects.}
+
+\item{\code{initializer}}{an optional function that can be specified to initialize the values.}
+}}
+

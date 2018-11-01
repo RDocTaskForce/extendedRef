@@ -10,15 +10,68 @@ setExtendedRefClass(Class, contains = character(),
   static.methods = list(), where = topenv(parent.frame()), ...)
 }
 \arguments{
-\item{private}{private variables}
+\item{Class}{The class name}
 
-\item{static}{static variables}
+\item{contains, fields, methods, where}{see \code{\link[methods:setRefClass]{methods::setRefClass()}}}
+
+\item{private}{Character vector indicating the classes of the private variables.}
+
+\item{static}{Character vector indicating the classes of the static variables.}
 
 \item{static.const}{static constants}
 
-\item{private.methods}{Private Methods}
+\item{private.methods}{List of private methods.}
 
-\item{static.methods}{Static Methods}
+\item{static.methods}{List of static methods.}
+
+\item{...}{Arguments passed on to \code{methods::setRefClass}
+\describe{
+  \item{Class}{
+character string name for the class.
+
+In the call to \code{getRefClass()} this argument can also be any
+object from the relevant class.
+
+}
+  \item{fields}{
+either a character vector of field names or
+a named list of the fields.  The resulting fields will be accessed with reference semantics (see
+the  section on \dQuote{Reference Objects}).  If the argument is a list, each
+element of the list should usually be the character string name of a class, in
+which case the object in the field must be from that class or a
+subclass.  An alternative, but not generally recommended, is to supply an  \emph{accessor
+   function}; see the section on \dQuote{Implementation} for accessor
+ functions and the related internal mechanism.
+
+Note that fields are distinct from
+slots.  Reference classes should not define class-specific slots. See
+the note on slots in the
+\dQuote{Implementation} section.
+}
+  \item{contains}{
+optional vector of superclasses for this class.  If a superclass is
+also a reference class, the fields and class-based methods will be inherited.
+}
+  \item{methods}{
+a named list of function definitions that can be invoked on objects
+from this class.  These can also be created by invoking the
+\code{$methods} method on the generator object returned. %$
+See the section on \dQuote{Writing Reference Methods} for details.
+}
+  \item{where}{
+for \code{setRefClass}, the environment in which to store the class definition.  Should be
+omitted in calls from a package's source code.
+
+For \code{getRefClass}, the environment from which to search for the definition.  If the
+package is not loaded or you need to be specific, use
+\code{\link{asNamespace}} with the package name.
+}
+  \item{inheritPackage}{
+Should objects from the new class inherit the package environment of a
+contained superclass?  Default \code{FALSE}.  See the Section \dQuote{Inter-Package Superclasses
+  and External Methods}.
+}
+}}
 }
 \description{
 Extended Reference classes are reference classes that support

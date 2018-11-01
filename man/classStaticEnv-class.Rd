@@ -7,17 +7,6 @@
 \alias{StaticConstEnv-class}
 \alias{static_const}
 \title{Static and Static Const Variable Environments}
-\usage{
-new_static_env(...)
-    \S4method{initialize}{classStaticEnv}(classes=character(), parent  = baseenv()
-                  , initializer = NULL, initialize.content = FALSE
-                  , self.name = 'static', initialized.name = 'static.initialized'
-                  , initialized.state = is.null(initializer)
-                  , className = NULL
-                  )
-    static_const(...)
-    \S4method{initialize}{StaticConstEnv}(content=list(), parent=NULL, className = NULL)
-}
 \arguments{
 \item{initialized.name}{Name of the variable which indicates if the environment has been initialized or not.}
 

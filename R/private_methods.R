@@ -18,10 +18,6 @@
 #' when stored as part of a class definition.  They are converted to
 #' a `objectPrivateMethods` object when attached to a specific instance.
 #' 
-#' @usage \S4method{initialize}{privateMethodsLibrary}( methods = list(), parent=NULL
-#'                             , className=NULL, .lock=TRUE)
-#'        \S4method{initialize}{objectPrivateMethods}(thing, library)
-#'   
 #' @inheritParams MethodsLibrary
 #' @param thing an object of class `className`.
 #' @param library a privateMethodsLibrary object.
