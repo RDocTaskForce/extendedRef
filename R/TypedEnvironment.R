@@ -32,6 +32,7 @@ setValidity('TypedEnvironment', validity <-function(object){
                        , dQuote(object@classes[[which.bad[[1]] ]]))
     msg
 })
+#' @export
 setMethod('initialize', 'TypedEnvironment', initialize <-
 function( .Object
         , classes = character(0)

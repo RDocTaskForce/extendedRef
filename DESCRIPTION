@@ -1,4 +1,4 @@
-Package: staticRef
+Package: extendedRef
 Type: Package
 Title: Reference Classes with Static and Private Variables
 Version: 0.1.0

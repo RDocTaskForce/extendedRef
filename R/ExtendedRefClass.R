@@ -96,11 +96,11 @@ function(.Object, ...){
     if (!is.null(classDef@static.const))
         parent <- insert_parent_env(.Object, classDef@static.const)
     if (!is.null(static <- classDef@static)){
+        parent <- insert_parent_env(.Object, classDef@static)
         if (!static$static.initialized && is.function(static@initializer)) {
             static@initializer()
             static$static.initialized <- TRUE
         }
-        parent <- insert_parent_env(.Object, classDef@static)
     }
     if (!is.null(classDef@static.methods)){
         parent <- insert_parent_env(.Object, classDef@static.methods)
@@ -110,16 +110,16 @@ function(.Object, ...){
                 static$static.initialized <- TRUE
         }
     }
-    if (length(classDef@private.classes) > 0L){
+    if (length(classDef@private.classes) > 0L) {
         private.env <- new( 'TypedEnvironment'
                           , classDef@private.classes
                           , parent = parent
                           , self.name = 'private'
                           )
         attr(private.env@.xData, 'name') <- 'object private variables'
+        parent <- insert_parent_env(.Object, private.env)
         if (is.function(private.env@initializer))
             private.env@initializer()
-        parent <- insert_parent_env(.Object, private.env)
     }
     if (!is.null(classDef@private.library)) {
         private.methods <- private_methods(.Object)
@@ -297,9 +297,9 @@ function( Class
         })
     ref.class <- generator$def
 
-    parent <- parent.env(ref.class@refMethods)
+    parent <- where
     if (length(static.const)) {
-        static.const <- static_const(static.const, className=Class)
+        static.const <- static_const(static.const, parent=parent, className=Class)
         parent <- static.const@.xData
     } else static.const <- NULL
     if (length(static)) {
@@ -376,6 +376,7 @@ if(FALSE){#@testing static const (ExtendedRefClass)  #####
     expect_identical( environmentName(gen$def@static.const)
                     , 'test with const Static Const Environment'
                     )
+    expect_identical(parent.env(classDef@static.const), globalenv())
     expect_identical(gen$static$const, classDef@static.const)
     
     expect_null(gen$def@private.library)
