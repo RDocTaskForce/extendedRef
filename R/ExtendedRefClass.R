@@ -1,21 +1,10 @@
 #' @include private_methods.R
 #' @include static_methods.R
 #' @include static_variables.R
+#' @include StaticTriad.R
 
 # Optional Classes --------------------------------------------------------
-#' @importClassesFrom methods NULL
-make_class_optional <-
-function( className
-        , name = paste0('optional-', className)
-        , where = topenv(parent.frame())
-        ){
-    setClassUnion(name, className)
-    setIs('NULL', name)
-}
-make_class_optional('classStaticEnv')
 make_class_optional('privateMethodsLibrary')
-make_class_optional('StaticMethods')
-make_class_optional('StaticConstEnv')
 
 # extendedRefClassDefinition ----------------------------------------------
 #' Extended Reference Definitions
@@ -82,6 +71,12 @@ if(FALSE){#@testing
     expect_identical(wprivate@static$count, 0L) 
     expect_true(wprivate@static$static.initialized)
 }
+setAs('extendedRefClassDefinition', 'StaticTriad', function(from){
+    new('StaticTriad', const   = from@static.const
+                     , vars    = from@static
+                     , methods = from@static.methods
+                     )
+})
 
 # ExtendedRefClass -------------------------------------------------------
 setRefClass('ExtendedRefClass', contains='envRefClass')
@@ -93,6 +88,7 @@ function(.Object, ...){
   
     parent <- parent.env(.Object@.xData)
   
+    if (length(classDef@refMethods))
     if (!is.null(classDef@static.const))
         parent <- insert_parent_env(.Object, classDef@static.const)
     if (!is.null(static <- classDef@static)){
@@ -125,14 +121,18 @@ function(.Object, ...){
         private.methods <- private_methods(.Object)
         if (exists('private_initialize', envir = private.methods, inherits = FALSE))
             private.methods$private_initialize()
-        if (exists('initialize', envir = private.methods, inherits = FALSE))
-            private.methods$initialize(...)
+        if (exists('.__initialize__.', envir = private.methods, inherits = FALSE)) {
+            init <- private.methods$.__initialize__. 
+            for (dep in init@mayCall)
+                do.call(`$`, args = list(.Object, dep))
+            init(...)
+        }
     }
     return(.Object)
 })
 
 
-# Extended Reference Generators --------
+# extendedRefObjectGenerator --------
 #' Extended Reference Generators
 #' 
 #' A [refObjectGenerator][methods::setRefClass()] is turned into a generator
@@ -149,14 +149,13 @@ setRefClass('extendedRefGeneratorSlot', contains='refGeneratorSlot'
 #' @rdname 
 setClass( 'extendedRefObjectGenerator', contains = c('refObjectGenerator')
         , slots = c( static = 'StaticTriad'))
-setInitialize('extendedRefObjectGenerator', 
+setInitialize('extendedRefObjectGenerator', initialize <- 
 function(.Object, ...){
     .Object <- callNextMethod()
     .Object@generator <- new('extendedRefGeneratorSlot', .Object@generator)
     .Object@generator$static <- .Object@static
     .Object
 })
-# setAs('extendedRefObjectGenerator', '')
 if(FALSE){#@testing
     super <- setRefClass('test')
     .Object <- new('extendedRefObjectGenerator', super)

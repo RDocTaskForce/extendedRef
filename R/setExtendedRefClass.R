@@ -32,6 +32,15 @@ function( Class
     has.static.const <- length(static.const) > 0L
     has.static <- length(static) > 0L
 
+    if (length(methods)) {
+        if ('initialize' %in% names(methods)) {
+            private.methods$.__initialize__. <- methods$initialize
+            methods$initialize <- function(..., verbose=getOption('verbose', FALSE)){
+                if (verbose)
+                    message("Initialization delayed until all environments are created.")
+            }
+        }
+    }
     withCallingHandlers({
         generator <- 
             setRefClass( Class
@@ -72,10 +81,12 @@ function( Class
                    )
     }
     if (length(private.methods)) {
-        private.library <-privateMethodsLibrary( methods = private.methods
-                                               , parent=parent
-                                               , className=Class
-                                               )
+        private.library <- privateMethodsLibrary( methods = private.methods
+                                                , parent=parent
+                                                , className=Class
+                                                , static.methods = names(static.methods)
+                                                , public.methods = names(methods)
+                                                )
         parent <- private.library@.xData
     } else private.library <- NULL
     parent.env(ref.class@refMethods) <- parent
@@ -107,14 +118,6 @@ function( Class
            )
     assignClassDef(Class, ExtendedDef, where)
     invisible(xgen)
-}
-if(FALSE){# Development
-    generator <- setRefClass('test')
-    static.const <- list(flag=TRUE, char='a')
-    static <- c(count = 'integer')
-    static.methods
-    
-    trace('setExtendedRefClass', browser)
 }
 if(FALSE){#@testing static const (ExtendedRefClass)  #####
     gen <- setExtendedRefClass( "test with const"
@@ -359,6 +362,79 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
     expect_length(object$., 5L)
 
     expect_true(removeClass(generator@className, where = generator@package))
+}
+if(FALSE){#@testing relocated initialize
+    flag <- setClass('flag', contains='logical'
+                    , validity = function(object)validate_that(length(object)==1))
+    setAs('logical', 'flag', function(from) flag(from))
+    init <- function(...)append(...)
+    flags <-{
+        setExtendedRefClass( Class = "Vector<flag>"
+                           , private = c( . = 'list')
+                           , static.const = list(element='flag')
+                           , methods ={list(
+                              initialize = init,
+                              validate = function()validate_that(is_valid()),
+                              append = function(...){
+                                  l <- list(...)
+                                  for (i in seq_len(nargs())) {
+                                      if (!is(l[[i]], element))
+                                          l[[i]] <- as(l[[i]], element)
+                                  }
+                                  . <<- c(., ...)
+                                  invisible(.self)
+                              },
+                              get = function(i).[[i]],
+                              length = function()base::length(.)
+                              
+                           )}
+                           , private.methods ={list(
+                               is_valid = function()see_if(all_inherit(., element))
+                               )}
+                           , where = globalenv()
+                           )}
+    def <- flags$def
+    default.init <- s(function(..., verbose=getOption('verbose', FALSE)){
+                        if (verbose)
+                            message("Initialization delayed until all environments are created.")
+                    }, srcref = NULL)
+    
+    expect_identical( ls(def@private.library, all=TRUE)
+                    , c('.__initialize__.', '.private.methods.library', 'is_valid')
+                    )
+    expect_identical( set_environment(def@refMethods$initialize@.Data, environment())
+                    , default.init
+                    )
+    expect_identical( set_environment(def@private.library$.__initialize__.@.Data, environment())
+                    , init
+                    )
+    
+    expect_identical(def@private.library$.__initialize__.@mayCall, 'append')
+    
+    
+    expect_is(object <- flags(flag(TRUE), flag(FALSE)), 'Vector<flag>')
+    expect_identical( ls(parent.env(object), all=TRUE)
+                    , c('.__initialize__.', 'is_valid')
+                    ) 
+    expect_identical( object$initialize@.Data
+                    , set_environment(default.init, object@.xData)
+                    ) 
+    expect_identical( parent.env(object)$.__initialize__.@.Data
+                    , set_environment(init, object)
+                    )
+    expect_identical( environment(parent.env(object)$.__initialize__.@.Data)
+                    , object@.xData
+                    )
+    
+    
+    expect_identical(parent.env(object)$.__initialize__.@mayCall, 'append')
+    expect_true(exists('append', object))
+    expect_equal(object$length(), 2L)
+
+    expect_message({withr::with_options( list(verbose=TRUE)
+                                       , obj <- flags(TRUE, FALSE)
+                                       )
+                   }, "Initialization delayed until all environments are created.")  
 }
 
 checkExtendedDef <- function(ExtendedDef){

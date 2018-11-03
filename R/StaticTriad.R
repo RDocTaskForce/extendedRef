@@ -1,6 +1,12 @@
 #' @include static_variables.R
 #' @include static_methods.R
 
+# Optional Classes --------------------------------------------------------
+make_class_optional('classStaticEnv')
+make_class_optional('StaticMethods')
+make_class_optional('StaticConstEnv')
+
+
 # StaticTriad ---------------------------------------------
 #' The Static Triad
 #' 
@@ -73,10 +79,3 @@ if(FALSE){#@testing
     expect_error(x$a <- 2, "is a static const value and cannot be changed")
     expect_error(x$b <- TRUE, "is not a valid static variable.")
 }
-#' @describeIn StaticTriad-class coerce to StaticTriad
-setAs('extendedRefClassDefinition', 'StaticTriad', function(from){
-    new('StaticTriad', const   = from@static.const
-                     , vars    = from@static
-                     , methods = from@static.methods
-                     )
-})

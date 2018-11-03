@@ -1,6 +1,7 @@
 #' @import assertthat
 #' @import methods
 #' @importFrom stats setNames
+#' @importFrom rlang %||%
 
 s <- function( .Data, ...){
     new.attr <- list(...)

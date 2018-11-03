@@ -11,27 +11,33 @@ Description: Provides the support for reference classes that can contain
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Depends: R(>= 3.5.0), methods
+Depends: R(>= 3.5.0)
 Imports: 
   assertthat,
   purrr,
   rlang,
+  methods,
   stats
 Suggests:
-  testthat,
-  knitr
+    testthat,
+    knitr,
+    covr
 Roxygen: list(markdown = TRUE, roclets = c("rd"))
 RoxygenNote: 6.1.0.9000
+URL: https://github.com/RDocTaskForce/extendedRef
 VignetteBuilder: knitr
 Remotes:
     klutometis/roxygen,
     r-lib/pkgload
 Collate:
+    'utils.R'
+    'util-insert_parent_env.R'
+    'util-make_class_optional.R'
     'TypedEnvironment.R'
     'static_variables.R'
-    'utils.R'
     'MethodsLibrary.R'
     'private_methods.R'
     'static_methods.R'
+    'StaticTriad.R'
     'ExtendedRefClass.R'
-    'util-insert_parent_env.R'
+    'setExtendedRefClass.R'

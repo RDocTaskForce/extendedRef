@@ -56,6 +56,7 @@ function(.Object
         , method.type='refMethodDef'
         , method.parent=as.environment(.Object)
         , parent = NULL
+        , ... #< passed to `new(method.type, ...)`
         , .lock = length(methods) > 0L
         ){
     .Object <- callNextMethod(.Object)
@@ -66,19 +67,22 @@ function(.Object
     assert_that(is.string(method.type))
     .Object@method.type <- method.type
     if (!is.list(methods)){
-        methods <- as.list(methods)
+        methods <- if (is.environment(methods)) as.list(methods, all=TRUE) else as.list(methods)
         methods <- methods[!sapply(methods, is.environment)]
     }
+    assert_that(all_inherit(methods, 'function'))
     if (length(methods)==0) return(.Object)
     else assert_that(rlang::is_dictionaryish(methods))
 
-    assert_that(all_inherit(methods, 'function'))
+    if (is.null(method.parent)) method.parent <- .Object@.xData
     for (i in seq_along(methods)){
         method <- methods[[i]]
-        name <- names(methods)[[i]]
-        if (!is(methods[[i]], method.type))
-            method <- new(method.type, method, name=name)
-        environment(method) <- method.parent
+        if (!is(methods[[i]], method.type)) {
+            name <- names(methods)[[i]]
+            method <- new( method.type, method, name=name, ...)
+        } else 
+            name <- method@name
+        environment(method@.Data) <- method.parent
         assign(name, method, envir = .Object@.xData)
     }
     if (.lock) lockEnvironment(.Object@.xData, bindings = TRUE)

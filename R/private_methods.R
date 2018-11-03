@@ -22,7 +22,81 @@
 #' @param thing an object of class `className`.
 #' @param library a privateMethodsLibrary object.
 #' @export
-setClass('PrivateMethod', contains = 'refMethodDef')
+setClass('PrivateMethod', contains = 'refMethodDef'
+        , slots = c( mayCall.private = 'character'
+                   , mayCall.static  = 'character'
+                   ))
+setInitialize('PrivateMethod', 
+    function( .Object
+            , ...
+            , className = character()
+            , public.methods = character()
+            , private.methods = character()
+            , static.methods = character()
+            ){
+    check_entry <- function(l, name = deparse(substitute(l))) 
+        if (is.null(l)) character(0) else
+        if (is.list(l)) names(0) else
+        if (is.environment(l)) ls(l, all=TRUE) else
+        if (assert_that(is.character(l)
+                       , msg = paste(name, "is not a character"))) l
+        
+    public.methods <- check_entry(public.methods)
+    private.methods <- check_entry(private.methods)
+    static.methods <- check_entry(static.methods)
+
+    called <- codetools::findGlobals(fun, FALSE)$functions
+    callNextMethod( .Object
+                  , ...
+                  , refClassName = className
+                  , mayCall         = intersect(called,  public.methods)
+                  , mayCall.private = intersect(called, private.methods)
+                  , mayCall.static  = intersect(called,  static.methods)
+                  )
+
+})
+if(FALSE){#@testing
+    flag <- setClass('flag', contains='logical'
+                    , validity = function(object)validate_that(length(object)==1))
+    setAs('logical', 'flag', function(from) flag(from))
+    init <- function(...)append(...)
+    flags <-{
+        setExtendedRefClass( Class = "Vector<flag>"
+                           , private = c( . = 'list')
+                           , static.const = list(element='flag')
+                           , methods ={list(
+                              initialize = init,
+                              validate = function()validate_that(is_valid()),
+                              append = function(...){
+                                  l <- list(...)
+                                  for (i in seq_len(nargs())) {
+                                      if (!is(l[[i]], element))
+                                          l[[i]] <- as(l[[i]], element)
+                                  }
+                                  browser()
+                                  . <<- c(., ...)
+                                  invisible(.self)
+                              },
+                              get = function(i).[[i]],
+                              length = function()base::length(.)
+                              
+                           )}
+                           , private.methods ={list(
+                               is_valid = function()see_if(all_inherit(., element))
+                               )}
+                           , where = globalenv()
+                           )}
+
+    fun <- function(...)append(...)
+    method <- new('PrivateMethod', fun, name='test', className = 'test-class'
+                 , public.methods = 'append'
+                 )    
+    expect_is(method, 'PrivateMethod')
+    expect_is(method, 'refMethodDef')
+    expect_identical(method@mayCall, 'append')
+} 
+
+
 
 
 # privateMethodsLibrary  --------------------------------------------------
@@ -35,12 +109,15 @@ privateMethodsLibrary <-
           )
 setMethod('initialize', 'privateMethodsLibrary', initialize <-
 function( .Object
+        , methods = list()  
         , ...
         , className=NULL
         , .lock=TRUE
         ){
     .Object <- callNextMethod( .Object
+                             , methods = methods  
                              , ...
+                             , private.methods = names(methods)
                              , method.type='PrivateMethod'
                              , .lock = FALSE
                              )
@@ -150,4 +227,19 @@ if(FALSE){#@testing
     expect_identical(environment(test.methods$hw), test.obj@.xData)
 
     expect_true(removeClass(test_class$def@className))
+}
+if (FALSE) {#@testing private_methods with .
+    Class <- "test with ."
+    gen <- setRefClass(Class, c(.='list'))
+    library <- 
+        privateMethodsLibrary( className= Class
+                             , list( hw=function()print('hello world')
+                                   , .__initialize__. = function(...)
+                                       . <<- list(...)
+                                   )
+                             , .lock=TRUE)
+    obj <- gen()
+    methods <- private_methods(obj, library)
+    
+    expect_identical(ls(methods, all=TRUE), c('.__initialize__.', 'hw'))
 }

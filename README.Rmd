@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
 library(extendedRef)
 library(assertthat)
 ```
-# Extensions to the reference class for R
+# extendedRef - Extended Reference Classes
+[![Build Status](https://travis-ci.org/RDocTaskForce/extendedRef.svg?branch=master)](https://travis-ci.org/r-hub/rhub)
 
 The goal of staticRef is to add static and private variable and methods support for R 
 reference classes.
