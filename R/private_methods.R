@@ -37,7 +37,7 @@ setInitialize('PrivateMethod',
     check_entry <- function(l, name = deparse(substitute(l))) 
         if (is.null(l)) character(0) else
         if (is.list(l)) names(0) else
-        if (is.environment(l)) ls(l, all=TRUE) else
+        if (is.environment(l)) ls(l, all.names = TRUE) else
         if (assert_that(is.character(l)
                        , msg = paste(name, "is not a character"))) l
         
@@ -45,7 +45,7 @@ setInitialize('PrivateMethod',
     private.methods <- check_entry(private.methods)
     static.methods <- check_entry(static.methods)
 
-    called <- codetools::findGlobals(fun, FALSE)$functions
+    called <- codetools::findGlobals(.Object, FALSE)$functions
     callNextMethod( .Object
                   , ...
                   , refClassName = className
