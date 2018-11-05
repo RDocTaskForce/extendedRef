@@ -19,15 +19,32 @@ setRefSet(element, Class = paste0("ReferenceSet<", element, ">"),
 
 \item{Class}{The Class name for the vector.}
 
-\item{fields}{see \code{\link[methods:setRefClass]{methods::setRefClass()}}}
+\item{fields}{see \link{ReferenceClasses}}
 
 \item{private}{Character vector indicating the classes of the private variables.}
 
 \item{static.const}{static constants}
 
-\item{methods}{see \code{\link[methods:setRefClass]{methods::setRefClass()}}}
+\item{methods}{see \link{ReferenceClasses}}
 
-\item{where}{see \code{\link[methods:setRefClass]{methods::setRefClass()}}}
+\item{...}{Arguments passed on to \code{setExtendedRefClass}
+\describe{
+  \item{Class}{The class name}
+  \item{contains}{see \link{ReferenceClasses}}
+  \item{fields}{see \link{ReferenceClasses}}
+  \item{methods}{see \link{ReferenceClasses}}
+  \item{where}{see \link{ReferenceClasses}}
+  \item{private}{Character vector indicating the classes of the private variables.}
+  \item{static}{Character vector indicating the classes of the static variables.}
+  \item{static.const}{static constants}
+  \item{private.methods}{List of private methods.}
+  \item{static.methods}{List of static methods.}
+}}
+
+\item{where}{see \link{ReferenceClasses}}
+
+\item{condition.already.contains}{The condition to raise if the
+set already contains the object being added.}
 }
 \description{
 Reference vectors act similar to lists, but have the additional

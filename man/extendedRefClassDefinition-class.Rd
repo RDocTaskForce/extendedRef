@@ -6,7 +6,7 @@
 \title{Extended Reference Definitions}
 \description{
 The defintion for an extended reference class extends the
-\link[methods:setRefClass]{refClassRepresentation}.  Of note is that the definition holds
+\link[=ReferenceClasses]{refClassRepresentation}.  Of note is that the definition holds
 the private methods library, the constant methods library, the
 static const environment and the static environment for all
 objects of the class.

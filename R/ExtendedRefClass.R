@@ -10,7 +10,7 @@ make_class_optional('privateMethodsLibrary')
 #' Extended Reference Definitions
 #' 
 #' The defintion for an extended reference class extends the 
-#' [refClassRepresentation][methods::setRefClass()].  Of note is that the definition holds
+#' [refClassRepresentation][ReferenceClasses].  Of note is that the definition holds
 #' the private methods library, the constant methods library, the 
 #' static const environment and the static environment for all
 #' objects of the class.
@@ -136,7 +136,7 @@ function(.Object, ...){
 # extendedRefObjectGenerator --------
 #' Extended Reference Generators
 #' 
-#' A [refObjectGenerator][methods::setRefClass()] is turned into a generator
+#' A [refObjectGenerator][ReferenceClasses] is turned into a generator
 #' for extended reference classes by replacing the `generator` slot 
 #' with an `extendedRefGeneratorSlot` object and the `def` field in the 
 #' `extendedRefGeneratorSlot` with a `extendedRefClassDefinition` object.

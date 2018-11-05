@@ -14,7 +14,10 @@ utils::globalVariables(c('.', 'equals', '.refClassDef'))
 #' 
 #' @param element The type of element allowed.
 #' @param Class   The Class name for the vector.
+#' @param condition.already.contains The condition to raise if the
+#'            set already contains the object being added.
 #' @inheritParams setExtendedRefClass
+#' @inheritDotParams setExtendedRefClass
 #' 
 setRefVector <-
 function( element
@@ -26,6 +29,7 @@ function( element
         , ...
         , where = topenv(parent.frame())
         ){
+    . <- NULL
     where <- where
     assert_that( is.string(element)
                , is.string(Class)
