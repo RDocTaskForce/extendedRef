@@ -21,7 +21,7 @@ setAs('classGeneratorFunction', 'classRepresentation', function(from)getClass(fr
 #' @param initialized.state The initial state of the initialized variable named in `initialized.name`
 #' @param className is used in assigning the resulting environment name. 
 #' @param ... arguments to initialize.
-#' @export
+#'
 new_static_env <-
 setClass( 'classStaticEnv', contains='TypedEnvironment')
 setMethod('initialize', 'classStaticEnv', initialize <-
@@ -88,7 +88,6 @@ if(FALSE){#@testing
 }
 
 # static_cost -----------------------------------------------------------------------
-#' @export
 #' @rdname classStaticEnv-class
 static_const <-
 setClass('StaticConstEnv', contains='environment')

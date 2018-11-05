@@ -9,7 +9,6 @@
 #' 
 #' @inheritParams MethodsLibrary
 #' 
-#' @export
 setClass('StaticMethod', contains = 'refMethodDef')
 if(FALSE){#@testing
     def <- function().count <<- 0L
@@ -23,7 +22,6 @@ if(FALSE){#@testing
 }
 
 #' @rdname StaticMethod-class
-#' @export
 static_methods <-
 setClass('StaticMethods'
         , contains='MethodsLibrary'

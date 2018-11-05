@@ -12,7 +12,6 @@
 # @param initialize.content a logical flag indicating if the initializer function should be run immediately.
 # @param self.name If specified will assign to this variable a copy of the resulting object.
 #' 
-#' @export
 setClass( "TypedEnvironment", contains = 'environment'
         , slots=c( classes = 'character'
                  , initializer = 'OptionalFunction'
@@ -32,7 +31,6 @@ setValidity('TypedEnvironment', validity <-function(object){
                        , dQuote(object@classes[[which.bad[[1]] ]]))
     msg
 })
-#' @export
 setMethod('initialize', 'TypedEnvironment', initialize <-
 function( .Object
         , classes = character(0)

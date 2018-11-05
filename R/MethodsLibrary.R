@@ -23,8 +23,7 @@
 # @slot .lock A logical flag indicating if the library is to be locked and 
 #             prevent adding or changing definitions.
 #             Default is to lock if methods are provided.
-#'             
-#' @export
+#'
 MethodsLibrary <- 
 setClass( 'MethodsLibrary'
         , contains = 'environment'

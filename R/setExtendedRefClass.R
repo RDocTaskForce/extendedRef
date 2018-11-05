@@ -14,7 +14,6 @@
 #' @param static.methods List of static methods.
 #' @inheritDotParams methods::setRefClass
 #' 
-#' @export
 setExtendedRefClass <-
 function( Class
         , contains = character()

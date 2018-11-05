@@ -15,7 +15,6 @@ make_class_optional('privateMethodsLibrary')
 #' static const environment and the static environment for all
 #' objects of the class.
 #'
-#' @export
 setClass( 'extendedRefClassDefinition'
         , contains='refClassRepresentation'
         , slots  = c( private.classes = 'character'
@@ -85,10 +84,10 @@ function(.Object, ...){
     Class <- class(.Object)
     classDef <- getClass(Class)
     .Object <- callNextMethod(.Object, ...)
-  
+    attr(.Object@.xData, 'name') <- paste(Class, 'object environment')
     parent <- parent.env(.Object@.xData)
   
-    if (length(classDef@refMethods))
+    # if (length(classDef@refMethods))
     if (!is.null(classDef@static.const))
         parent <- insert_parent_env(.Object, classDef@static.const)
     if (!is.null(static <- classDef@static)){
@@ -128,6 +127,8 @@ function(.Object, ...){
             init(...)
         }
     }
+    attr(.Object, 'extended.initialized') <- TRUE
+    # validObject(.Object)
     return(.Object)
 })
 
@@ -146,7 +147,7 @@ function(.Object, ...){
 extendedRefGeneratorSlot <- 
 setRefClass('extendedRefGeneratorSlot', contains='refGeneratorSlot'
            , fields = c(static='StaticTriad'))
-#' @rdname 
+#' @rdname  extendedRefGeneratorSlot-class
 setClass( 'extendedRefObjectGenerator', contains = c('refObjectGenerator')
         , slots = c( static = 'StaticTriad'))
 setInitialize('extendedRefObjectGenerator', initialize <- 

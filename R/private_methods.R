@@ -21,7 +21,7 @@
 #' @inheritParams MethodsLibrary
 #' @param thing an object of class `className`.
 #' @param library a privateMethodsLibrary object.
-#' @export
+#'
 setClass('PrivateMethod', contains = 'refMethodDef'
         , slots = c( mayCall.private = 'character'
                    , mayCall.static  = 'character'
@@ -100,7 +100,6 @@ if(FALSE){#@testing
 
 
 # privateMethodsLibrary  --------------------------------------------------
-#' @export
 #' @rdname PrivateMethod-class
 privateMethodsLibrary <-
   setClass( 'privateMethodsLibrary'
@@ -173,7 +172,6 @@ if(FALSE){#@testing
 
 
 # objectPrivateMethods ----------------------------------------------------
-#' @export
 #' @rdname PrivateMethod-class
 private_methods <- setClass('objectPrivateMethods', contains='MethodsLibrary')
 setMethod('initialize', 'objectPrivateMethods', initialize <-

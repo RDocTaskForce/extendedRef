@@ -1,7 +1,3 @@
-#' @import assertthat
-#' @import methods
-#' @importFrom stats setNames
-#' @importFrom rlang %||%
 
 s <- function( .Data, ...){
     new.attr <- list(...)
@@ -47,10 +43,21 @@ ngettextf <-
         else gettextf(msg2, ..., domain = domain)
     }
 
+are <- function(lst, class2){
+    purrr::map_lgl(lst, is, class2)
+}
+if(FALSE){#@testing
+    lst <- list('a', 1L, TRUE)
+    
+    expect_true(all(are(lst, 'ANY')))
+    expect_identical(are(lst, 'character'), c(T,F,F))
+    expect_identical(are(lst, 'integer'), c(F,T,F))
+    expect_identical(are(lst, 'numeric'), c(F,T,F))
+}
 all_inherit <- function(lst, what, label=NULL){
     act <- testthat::quasi_label(rlang::enquo(lst), label)
     stopifnot( is.character(what) || is.null(what) )
-    if (all(. <- purrr::map_lgl(lst, inherits, what=what, which=FALSE)))
+    if (all(. <- are(lst, what)))
         return(TRUE)
     msg <- if (sum(!.) > 1L) {
         ._("%s has bad elements at %s which do not inherit from %s."
@@ -98,17 +105,6 @@ are_valid <-
             if (isTRUE(simplify) || all(valid)) return(simplify2array(valid))
         else return(valid)
     }
-are <- function(lst, class2){
-    purrr::map_lgl(lst, is, class2)
-}
-if(FALSE){#@testing
-    lst <- list('a', 1L, TRUE)
-    
-    expect_true(all(are(lst, 'ANY')))
-    expect_identical(are(lst, 'character'), c(T,F,F))
-    expect_identical(are(lst, 'integer'), c(F,T,F))
-    expect_identical(are(lst, 'numeric'), c(F,T,F))
-}
 
 
 ._not_implemented <- function(object, ...)
@@ -128,4 +124,19 @@ setInitialize <- function(...)setMethod(f = 'initialize', ...)
 .checkFieldsInMethod <- 
     get('.checkFieldsInMethod', asNamespace('methods'))
 
+number_of_arguments <- function(f){
+    args <- formals(f)
+    if (is.null(args))
+        return(length(utils::head(as.list(args(f)), -1)))
+    if ('...' %in% names(args))
+        return(Inf)
+    else
+        length(args)
+}
+if(FALSE){#@testing
+    expect_equal(number_of_arguments(rnorm), 3L)
+    expect_equal(number_of_arguments(paste), Inf)
+    expect_equal(number_of_arguments(xtfrm), 1)
+}
 
+assert_that <- pkgcond::assert_that

@@ -4,6 +4,7 @@
 \name{extendedRefGeneratorSlot-class}
 \alias{extendedRefGeneratorSlot-class}
 \alias{extendedRefGeneratorSlot}
+\alias{extendedRefObjectGenerator-class}
 \title{Extended Reference Generators}
 \description{
 A \link[methods:setRefClass]{refObjectGenerator} is turned into a generator

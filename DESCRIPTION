@@ -13,11 +13,12 @@ Encoding: UTF-8
 LazyData: true
 Depends: R(>= 3.5.0)
 Imports: 
-  assertthat,
   purrr,
   rlang,
   methods,
-  stats
+  stats,
+  pkgcond,
+  utils
 Suggests:
     testthat,
     knitr,
@@ -41,3 +42,4 @@ Collate:
     'StaticTriad.R'
     'ExtendedRefClass.R'
     'setExtendedRefClass.R'
+    'RefVector.R'
