@@ -12,7 +12,7 @@ setExtendedRefClass(Class, contains = character(),
 \arguments{
 \item{Class}{The class name}
 
-\item{contains, fields, methods, where}{see \code{\link[methods:setRefClass]{methods::setRefClass()}}}
+\item{contains, fields, methods, where}{see \link{ReferenceClasses}}
 
 \item{private}{Character vector indicating the classes of the private variables.}
 

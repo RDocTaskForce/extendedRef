@@ -16,6 +16,6 @@ library object, ie. a self referential object.
 \describe{
 \item{\code{method.type}}{A string giving the type of method expected,
 the type should inherit from 'function', and
-preferrably from \link[methods:refMethodDef-class]{refMethodDef}.}
+preferrably from \link[=ReferenceClasses]{refMethodDef}.}
 }}
 

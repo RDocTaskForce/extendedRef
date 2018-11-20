@@ -13,7 +13,7 @@
 #' 
 #' @slot method.type A string giving the type of method expected, 
 #'                   the type should inherit from 'function', and 
-#'                   preferrably from [refMethodDef][methods::refMethodDef-class].
+#'                   preferrably from [refMethodDef][ReferenceClasses].
 # @slot  methods The list of methods to include in the library.  
 #                Methods will be converted to the appropriate type automatically.
 # @slot method.parent The parent environment for methods within the library.

@@ -14,7 +14,10 @@ utils::globalVariables(c('.', 'equals', '.refClassDef'))
 #' 
 #' @param element The type of element allowed.
 #' @param Class   The Class name for the vector.
+#' @param condition.already.contains The condition to raise if the
+#'            set already contains the object being added.
 #' @inheritParams setExtendedRefClass
+#' @inheritDotParams setExtendedRefClass
 #' 
 setRefVector <-
 function( element
@@ -26,6 +29,7 @@ function( element
         , ...
         , where = topenv(parent.frame())
         ){
+    . <- NULL
     where <- where
     assert_that( is.string(element)
                , is.string(Class)
@@ -59,12 +63,14 @@ function( element
         methods[['get']] <- function(...){.[[...]]}
     if ('set' %!in% names(methods))
         methods[['set']] <- function(..., value){.[[...]] <<- value; invisible(.self)}
-    if (assert_that(!any(c('length', 'names') %in% names(methods)))){
+    if ('length' %!in% names(methods)) 
         methods[['length']] <- function(x){if(missing(x)) base::length(.) else base::length(x)}
+    if ('names' %!in% names(methods))
         methods[['names']]  <- function(x){if(missing(x)) base::names(.)  else base::names(x)}
-    }
     if (assert_that("element" %!in% names(static.const)))
         static.const <- c(static.const, element=element)
+    if ('as.list' %!in% names(methods))
+        methods[['as.list']] <- function().
 
     generator <-
         setExtendedRefClass( Class=Class
@@ -74,7 +80,6 @@ function( element
                            , private=private
                            , ..., where=where)
     setValidity(Class, function(object){
-        # browser()
         if (!isTRUE(attr(object@.xData, 'extended.initialized'))) return(TRUE)
         object$validate()
     }, where=where)
@@ -83,6 +88,7 @@ function( element
     setMethod('[[<-'  , c(Class, 'ANY'), function(x, i, ..., value)x$set(i,..., value=value), where = where)
     setMethod('length', Class, function(x)x$length(), where = where)
     setMethod('names' , Class, function(x)x$names(), where = where)
+    setMethod('as.list', Class, function(x, ...)x$as.list(), where = where)
     
     return(invisible(generator))
 }
@@ -150,6 +156,7 @@ function( element
         , methods = list()
         , ...
         , static.const = list()
+        , static.methods = list()
         , condition.already.contains = 
                 c('message', 'warning', 'error', 'none')
                 #< Type of condition to raise if object is
@@ -200,9 +207,9 @@ function( element
         static.const[['condition.already.contains']]  <- condition.already.contains
     
     
-    if ('equals' %in% names(static.const)){
-       assert_that( is.function(static.const$equals)
-                  , number_of_arguments(static.const$equals) >= 2
+    if ('equals' %in% names(static.methods)){
+       assert_that( is.function(static.methods$equals)
+                  , number_of_arguments(static.methods$equals) >= 2
                   )
     } else {
         static.const$equals <- base::identical
@@ -211,6 +218,7 @@ function( element
         setRefVector( element, Class=Class
                     , methods = methods
                     , static.const = static.const
+                    , static.methods = static.methods
                     , ..., where=where)
     return(invisible(generator))
 }

@@ -7,7 +7,7 @@
 \alias{extendedRefObjectGenerator-class}
 \title{Extended Reference Generators}
 \description{
-A \link[methods:setRefClass]{refObjectGenerator} is turned into a generator
+A \link[=ReferenceClasses]{refObjectGenerator} is turned into a generator
 for extended reference classes by replacing the \code{generator} slot
 with an \code{extendedRefGeneratorSlot} object and the \code{def} field in the
 \code{extendedRefGeneratorSlot} with a \code{extendedRefClassDefinition} object.

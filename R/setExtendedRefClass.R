@@ -6,7 +6,7 @@
 #' static and private methods and variables.
 #' 
 #' @param Class The class name
-#' @param contains,fields,methods,where see [methods::setRefClass()]
+#' @param contains,fields,methods,where see [ReferenceClasses]
 #' @param private Character vector indicating the classes of the private variables.
 #' @param static Character vector indicating the classes of the static variables.
 #' @param static.const static constants 
