@@ -3,7 +3,7 @@
 extendedRef - Extended Reference Classes
 ========================================
 
-[![Build Status](https://travis-ci.org/RDocTaskForce/extendedRef.svg?branch=master)](https://travis-ci.org/r-hub/rhub)
+[![Build Status](https://travis-ci.org/RDocTaskForce/extendedRef.svg?branch=master)](https://travis-ci.org/RDocTaskForce/extendedRef) [![codecov.io](https://codecov.io/github/RDocTaskForce/extendedRef/coverage.svg?branch=master)](https://codecov.io/github/RDocTaskForce/extendedRef?branch=master)
 
 The goal of staticRef is to add static and private variable and methods support for R reference classes.
 
@@ -67,7 +67,7 @@ counter <-
         )
 ```
 
-This class may not be terribly useful but illustrates the concepts.
+This class may not be very useful but illustrates the concepts.
 
 As before the `counter` object is a object generator function that creates objects from the exteneded reference class 'registeredCounter'. However, the generator object also provides a method for accessing the static variables and methods.
 
