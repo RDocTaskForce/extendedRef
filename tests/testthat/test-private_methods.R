@@ -34,7 +34,9 @@ test_that('initialize,privateMethodsLibrary-method', {#@testing
 })
 #line 118 "R/private_methods.R"
 test_that('initialize,privateMethodsLibrary-method', {#@testing
-    test_class <- setRefClass('test-class')
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
+    test_class <- setRefClass('test-class', where = globalenv())
     classDef <- test_class$def
     # expect_false(has_private_methods_library(classDef))
 
@@ -56,10 +58,12 @@ test_that('initialize,privateMethodsLibrary-method', {#@testing
     #               , "test-class already has a private methods library defined")
     # expect_identical(lib2, private.library)
 
-    expect_true(removeClass(test_class@className))
+    expect_true(removeClass(test_class@className, where = globalenv()))
 })
-#line 172 "R/private_methods.R"
+#line 174 "R/private_methods.R"
 test_that('initialize,objectPrivateMethods-method', {#@testing
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
     test_class <- setRefClass('test-class')
     library <- privateMethodsLibrary()
     test.obj <- test_class()
@@ -67,9 +71,13 @@ test_that('initialize,objectPrivateMethods-method', {#@testing
 
     expect_identical(ls(.Object, all=TRUE), character())
     expect_true(removeClass(test_class$def@className))
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
 })
-#line 181 "R/private_methods.R"
+#line 187 "R/private_methods.R"
 test_that('initialize,objectPrivateMethods-method', {#@testing
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
     test_class <- setRefClass('test-class')
     classDef <- test_class$def
     expect_is(classDef, "refClassRepresentation")
@@ -89,9 +97,10 @@ test_that('initialize,objectPrivateMethods-method', {#@testing
 
     expect_true(removeClass(test_class$def@className))
 })
-#line 201 "R/private_methods.R"
+#line 209 "R/private_methods.R"
 test_that('private_methods with .', {#@testing private_methods with .
     Class <- "test with ."
+    if (exists(classMetaName(Class))) removeClass(Class)
     gen <- setRefClass(Class, c(.='list'))
     library <-
         privateMethodsLibrary( className= Class
@@ -104,4 +113,6 @@ test_that('private_methods with .', {#@testing private_methods with .
     methods <- private_methods(obj, library)
 
     expect_identical(ls(methods, all=TRUE), c('.__initialize__.', 'hw'))
+
+    expect_true(removeClass(Class))
 })

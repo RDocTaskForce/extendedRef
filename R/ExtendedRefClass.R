@@ -9,10 +9,10 @@ make_class_optional('privateMethodsLibrary')
 # extendedRefClassDefinition ----------------------------------------------
 #' Extended Reference Definitions
 #'
-#' The defintion for an extended reference class extends the
-#' [refClassRepresentation][ReferenceClasses].  Of note is that the definition holds
+#' The definition for an extended reference class extends the
+#' [`refClassRepresentation`][ReferenceClasses].  Of note is that the definition holds
 #' the private methods library, the constant methods library, the
-#' static const environment and the static environment for all
+#' static constant environment and the static environment for all
 #' objects of the class.
 #'
 setClass( 'extendedRefClassDefinition'
@@ -38,6 +38,8 @@ if(FALSE){#@testing
     expect_null(bare@static.const)
     expect_null(bare@static.methods)
 
+    if (exists(classMetaName('test')))
+        try(removeClass('test'), silent = TRUE)
     ref_generator <- setRefClass('test', fields = list(count = 'integer'))
     ref.def <- ref_generator$def
 
@@ -160,6 +162,8 @@ function(.Object, ...){
     .Object
 })
 if(FALSE){#@testing extendedRefObjectGenerator
+    if (exists(classMetaName('test')))
+        try(removeClass('test'), TRUE)
     super <- setRefClass('test')
     .Object <- new('extendedRefObjectGenerator', super)
 

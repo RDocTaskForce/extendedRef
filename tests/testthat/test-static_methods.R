@@ -17,10 +17,10 @@ test_that('setClass("StaticMethod", ...)', {#@testing
 test_that('initialize,StaticMethods-method', {#@testing
     expect_is(bare <- static_methods(), 'StaticMethods')
     expect_length(as.list(bare, all=TRUE), 0L)
-    
+
     expect_is(lib <- static_methods(list(say_hi= function(){cat('hi\n')})), 'StaticMethods')
     expect_length(ls(lib, all=TRUE), 1L)
-    
+
     expect_is(lib$say_hi, 'StaticMethod')
     expect_identical(environment(lib$say_hi), lib@.xData)
 })

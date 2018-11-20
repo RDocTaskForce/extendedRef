@@ -5,9 +5,9 @@
 \alias{extendedRefClassDefinition-class}
 \title{Extended Reference Definitions}
 \description{
-The defintion for an extended reference class extends the
-\link[=ReferenceClasses]{refClassRepresentation}.  Of note is that the definition holds
+The definition for an extended reference class extends the
+\code{\link[=ReferenceClasses]{refClassRepresentation}}.  Of note is that the definition holds
 the private methods library, the constant methods library, the
-static const environment and the static environment for all
+static constant environment and the static environment for all
 objects of the class.
 }

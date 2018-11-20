@@ -2,7 +2,7 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `ExtendedRefClass.R`')
-#line 33 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
+#line 33 "R/ExtendedRefClass.R"
 test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     bare <- new('extendedRefClassDefinition')
     expect_null(bare@private.library)
@@ -11,6 +11,8 @@ test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     expect_null(bare@static.const)
     expect_null(bare@static.methods)
 
+    if (exists(classMetaName('test')))
+        try(removeClass('test'), silent = TRUE)
     ref_generator <- setRefClass('test', fields = list(count = 'integer'))
     ref.def <- ref_generator$def
 
@@ -45,8 +47,10 @@ test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
 
     expect_true(removeClass(ref_generator@className))
 })
-#line 162 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
+#line 164 "R/ExtendedRefClass.R"
 test_that('extendedRefObjectGenerator', {#@testing extendedRefObjectGenerator
+    if (exists(classMetaName('test')))
+        try(removeClass('test'), TRUE)
     super <- setRefClass('test')
     .Object <- new('extendedRefObjectGenerator', super)
 

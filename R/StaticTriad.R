@@ -10,15 +10,15 @@ make_class_optional('StaticConstEnv')
 # StaticTriad ---------------------------------------------
 #' The Static Triad
 #'
-#' The static triad consists of a const environment for constants,
-#' a vars environment for variables, and a methods environment for methods.
+#' The static triad consists of a `$const` environment for constants,
+#' a `$vars` environment for variables, and a `$methods` environment for methods.
 #'
-#' @param x       A StaticTriad Object
+#' @param x       A `StaticTriad` Object
 #' @param name    The name of the constant, variable, or method
 #' @param value   The replacement value for variables only.
 #'
 #' @section Methods:
-#'  * `$` is definded to make all variables, constants and
+#'  * `$` is defined to make all variables, constants and
 #'        methods visible through the single object.
 #'  * `$<-` Does the same but protects constants and methods
 #'        from being overwritten.
@@ -31,9 +31,9 @@ setRefClass( "StaticTriad"
            )
 #' @rdname StaticTriad-class
 setMethod('$', 'StaticTriad', function(x, name){
-    const   <- get('const'  , x)
-    vars    <- get('vars'   , x)
-    methods <- get('methods', x)
+    const   <- get('const'  , x);    if (identical(name, 'const'  )) return(const)
+    vars    <- get('vars'   , x);    if (identical(name, 'vars'   )) return(vars)
+    methods <- get('methods', x);    if (identical(name, 'methods')) return(methods)
     if (!is.null(methods) && exists(name, methods)) return(get(name, methods)) else
     if (!is.null(vars   ) && exists(name, vars   )) return(get(name, vars   )) else
     if (!is.null(const  ) && exists(name, const  )) return(get(name, const  )) else

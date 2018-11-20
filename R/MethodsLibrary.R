@@ -9,11 +9,11 @@
 #' A methods library is a container for methods of a specific type.
 #' All objects in the library should be functions of type `method.type`.
 #' One exception is made for objects that points back to the
-#' library object, ie. a self referential object.
+#' library object, i.e. a self referential object.
 #'
 #' @slot method.type A string giving the type of method expected,
 #'                   the type should inherit from 'function', and
-#'                   preferrably from [refMethodDef][ReferenceClasses].
+#'                   preferably from [`refMethodDef`][ReferenceClasses].
 # @slot  methods The list of methods to include in the library.
 #                Methods will be converted to the appropriate type automatically.
 # @slot method.parent The parent environment for methods within the library.

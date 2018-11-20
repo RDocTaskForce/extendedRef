@@ -8,6 +8,6 @@
 \title{Static Methods}
 \description{
 Static methods denote functions that are intended to act on
-class static variables only.  They inherit from refMethodDef,
-and use the same initializers and methods.
+class static variables only.  They inherit from \code{\link[=ReferenceClasses]{refMethodDef}},
+and use the same methods.
 }

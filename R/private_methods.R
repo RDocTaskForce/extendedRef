@@ -11,7 +11,7 @@
 #' @description
 #' Private methods are functions that are intended for internal use.
 #' They do not appear when listing the contents of a reference object.
-#' They are available to the publid methods to call but cannot be accessed
+#' They are available to the public methods to call but cannot be accessed
 #' through the `object$method()` mechanism that public methods are.
 #'
 #' Private methods are stored in a `privateMethodsLibrary` object
@@ -20,7 +20,7 @@
 #'
 #' @inheritParams MethodsLibrary
 #' @param thing an object of class `className`.
-#' @param library a privateMethodsLibrary object.
+#' @param library a `privateMethodsLibrary` object.
 #'
 setClass('PrivateMethod', contains = 'refMethodDef'
         , slots = c( mayCall.private = 'character'
@@ -116,6 +116,8 @@ if(FALSE){#@testing
     expect_identical(environmentName(dne), "Does not exist private methods library")
 }
 if(FALSE){#@testing
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
     test_class <- setRefClass('test-class', where = globalenv())
     classDef <- test_class$def
     # expect_false(has_private_methods_library(classDef))
@@ -170,6 +172,8 @@ setMethod('initialize', 'objectPrivateMethods', initialize <-
                   return(.Object)
               })
 if(FALSE){#@testing
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
     test_class <- setRefClass('test-class')
     library <- privateMethodsLibrary()
     test.obj <- test_class()
@@ -177,8 +181,12 @@ if(FALSE){#@testing
 
     expect_identical(ls(.Object, all=TRUE), character())
     expect_true(removeClass(test_class$def@className))
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
 }
 if(FALSE){#@testing
+    if (exists(classMetaName('test-class')))
+        try(removeClass('test-class'), TRUE)
     test_class <- setRefClass('test-class')
     classDef <- test_class$def
     expect_is(classDef, "refClassRepresentation")
@@ -198,8 +206,9 @@ if(FALSE){#@testing
 
     expect_true(removeClass(test_class$def@className))
 }
-if (FALSE) {#@testing private_methods with .
+if(FALSE){#@testing private_methods with .
     Class <- "test with ."
+    if (exists(classMetaName(Class))) removeClass(Class)
     gen <- setRefClass(Class, c(.='list'))
     library <-
         privateMethodsLibrary( className= Class
@@ -212,4 +221,6 @@ if (FALSE) {#@testing private_methods with .
     methods <- private_methods(obj, library)
 
     expect_identical(ls(methods, all=TRUE), c('.__initialize__.', 'hw'))
+
+    expect_true(removeClass(Class))
 }
