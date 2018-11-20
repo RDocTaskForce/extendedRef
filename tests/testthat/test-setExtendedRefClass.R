@@ -1,124 +1,9 @@
-# setExtendedRefClass ------------------------------------------------
+#! This file was automatically produced by the testextra package.
+#! Changes will be overwritten.
 
-#' Create an Extended Reference Class.
-#'
-#' Extended Reference classes are reference classes that support
-#' static and private methods and variables.
-#'
-#' @param Class The class name
-#' @param contains,fields,methods,where see [ReferenceClasses]
-#' @param private Character vector indicating the classes of the private variables.
-#' @param static Character vector indicating the classes of the static variables.
-#' @param static.const static constants
-#' @param private.methods List of private methods.
-#' @param static.methods List of static methods.
-#' @inheritDotParams methods::setRefClass
-#'
-setExtendedRefClass <-
-function( Class
-        , contains = character()
-        , fields          = character() #< public fields
-        , private         = character() #< private variables
-        , static          = character() #< static variables
-        , static.const    = list()      #< static const variables
-        , methods         = list()   #< public methods
-        , private.methods = list()   #< private methods
-        , static.methods  = list()   #< static methods
-        , where = topenv(parent.frame())
-        , ...){
-    force(where)
-    has.private.methods <- length(private.methods) > 0L
-    has.static.const <- length(static.const) > 0L
-    has.static <- length(static) > 0L
-
-    if (length(methods)) {
-        if ('initialize' %in% names(methods)) {
-            private.methods$.__initialize__. <- methods$initialize
-            methods$initialize <- function(..., verbose=getOption('verbose', FALSE)){
-                if (verbose)
-                    message("Initialization delayed until all environments are created.")
-            }
-        }
-    }
-    withCallingHandlers({
-        generator <-
-            setRefClass( Class
-                       , fields = fields
-                       , contains = c('ExtendedRefClass', contains)
-                       , methods = methods
-                       , where = where
-                       , ...)
-        }
-        , warning = function(e){
-            if (grepl('non-local assignment to non-field names (possibly misspelled?)', e$message, fixed=TRUE))
-                invokeRestart("muffleWarning")
-            else warning(e)
-        })
-    ref.class <- generator$def
-
-    parent <- where
-    if (length(static.const)) {
-        static.const <- static_const(static.const, parent=parent, className=Class)
-        parent <- static.const@.xData
-    } else static.const <- NULL
-    if (length(static)) {
-        static <- new_static_env( static, className = Class, parent=parent
-                                , initialized.state = 'static_initialize' %!in% names(static.methods)
-                                )
-        parent <- static@.xData
-    } else static <- NULL
-    if (length(static.methods)) {
-        static.methods <- static_methods( static.methods
-                                        , parent=parent
-                                        , className = Class
-                                        )
-        parent <- static.methods@.xData
-    } else static.methods <- NULL
-    if (length(private)) {
-        assert_that( is.character(private)
-                   , rlang::is_dictionaryish(private)
-                   )
-    }
-    if (length(private.methods)) {
-        private.library <- privateMethodsLibrary( methods = private.methods
-                                                , parent=parent
-                                                , className=Class
-                                                , static.methods = names(static.methods)
-                                                , public.methods = names(methods)
-                                                )
-        parent <- private.library@.xData
-    } else private.library <- NULL
-    parent.env(ref.class@refMethods) <- parent
-
-    triad <- new('StaticTriad', const   = static.const
-                              , vars    = static
-                              , methods = static.methods
-                              )
-    ExtendedDef <- new( 'extendedRefClassDefinition'
-                      , ref.class
-                      , private.classes = private
-                      , private.library = private.library
-                      , static          = static
-                      , static.const    = static.const
-                      , static.methods  = static.methods
-                      )
-    checkExtendedDef(ExtendedDef)
-    xgenslot <- new( 'extendedRefGeneratorSlot'
-                   , generator@generator
-                   , static=triad
-                   , def = ExtendedDef)
-    xgen <-
-        new( 'extendedRefObjectGenerator'
-           , generator
-           , static    = triad
-           , generator = xgenslot
-           , className = Class
-           , package   = generator@package
-           )
-    assignClassDef(Class, ExtendedDef, where)
-    invisible(xgen)
-}
-if(FALSE){#@testing static const (ExtendedRefClass)  #####
+context('tests extracted from file `setExtendedRefClass.R`')
+#line 121 "R/setExtendedRefClass.R"
+test_that('static const (ExtendedRefClass)  #####', {#@testing static const (ExtendedRefClass)  #####
     name <- "test with const"
     gen <- setExtendedRefClass( name
                               , static.const = list(element='function')
@@ -152,8 +37,9 @@ if(FALSE){#@testing static const (ExtendedRefClass)  #####
     expect_identical(get('element', object), 'function')
 
     expect_true(removeClass("test with const"))
-}
-if(FALSE){#@testing static (ExtendedRefClass) #####
+})
+#line 156 "R/setExtendedRefClass.R"
+test_that('static (ExtendedRefClass) #####', {#@testing static (ExtendedRefClass) #####
     name <- "test with static"
     gen <- setExtendedRefClass( name
                               , static = c(count='integer')
@@ -177,8 +63,9 @@ if(FALSE){#@testing static (ExtendedRefClass) #####
     expect_identical(get('count', object), integer())
 
     expect_true(removeClass("test with static"))
-}
-if(FALSE){#@testing All Static (ExtendedRefClass) #####
+})
+#line 181 "R/setExtendedRefClass.R"
+test_that('All Static (ExtendedRefClass) #####', {#@testing All Static (ExtendedRefClass) #####
     gen <- setExtendedRefClass( "test with all static"
                               , static.const = list(allowed = 'integer')
                               , static = c( count='integer'
@@ -207,8 +94,9 @@ if(FALSE){#@testing All Static (ExtendedRefClass) #####
     expect_identical(get('count', object), integer())
 
     expect_true(removeClass("test with all static"))
-}
-if(FALSE){#@testing with private (ExtendedRefClass) #####
+})
+#line 211 "R/setExtendedRefClass.R"
+test_that('with private (ExtendedRefClass) #####', {#@testing with private (ExtendedRefClass) #####
     gen <- setExtendedRefClass( "test with private"
                               , private = c(var='character')
                               , where = globalenv()
@@ -231,8 +119,9 @@ if(FALSE){#@testing with private (ExtendedRefClass) #####
     expect_identical(ls(private, all=TRUE), c('private','var'))
 
     expect_true(removeClass("test with private"))
-}
-if(FALSE){#@testing private methods (ExtendedRefClass)  #####
+})
+#line 235 "R/setExtendedRefClass.R"
+test_that('private methods (ExtendedRefClass)  #####', {#@testing private methods (ExtendedRefClass)  #####
     gen <- setExtendedRefClass( "test with private methods"
                               , private = c(greeting = 'character')
                               , private.methods = list(say_hi = function()cat(greeting, '\n'))
@@ -264,8 +153,9 @@ if(FALSE){#@testing private methods (ExtendedRefClass)  #####
     expect_output(get('say_hi', object)(), 'Hello')
 
     expect_true(removeClass("test with private methods"))
-}
-if(FALSE){#@testing static.const & private vars #####
+})
+#line 268 "R/setExtendedRefClass.R"
+test_that('static.const & private vars #####', {#@testing static.const & private vars #####
     gen <- setExtendedRefClass( "static & private"
                               , static.const = list(who = "Santa")
                               , private = c(greeting = 'character')
@@ -284,8 +174,9 @@ if(FALSE){#@testing static.const & private vars #####
     expect_identical(parent.env(private), classDef@static.const@.xData)
 
     expect_true(removeClass(gen@className))
-}
-if(FALSE){#@testing with all (ExtendedRefClass) #####
+})
+#line 288 "R/setExtendedRefClass.R"
+test_that('with all (ExtendedRefClass) #####', {#@testing with all (ExtendedRefClass) #####
     generator <-{
         setExtendedRefClass( Class = "testStaticClass"
                            , fields ={list( . = 'list'
@@ -371,8 +262,9 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
     expect_length(object$., 5L)
 
     expect_true(removeClass(generator@className, where = generator@package))
-}
-if(FALSE){#@testing relocated initialize
+})
+#line 375 "R/setExtendedRefClass.R"
+test_that('relocated initialize', {#@testing relocated initialize
     flag <- setClass('flag', contains='logical'
                     , validity = function(object)validate_that(length(object)==1))
     setAs('logical', 'flag', function(from) flag(from))
@@ -446,43 +338,4 @@ if(FALSE){#@testing relocated initialize
                    }, "Initialization delayed until all environments are created.")
 
     expect_true(removeClass("Vector<flag>"))
-}
-
-checkExtendedDef <- function(ExtendedDef){
-    assert_that( is(ExtendedDef, 'extendedRefClassDefinition'))
-
-
-    private.fields <- names(ExtendedDef@private.classes)
-    public.fields  <- names(ExtendedDef@fieldClasses)
-    static.fields  <- names(ExtendedDef@static)
-    const.fields   <- names(ExtendedDef@static.const)
-
-    private.methods <- names(names(ExtendedDef@private.library))
-    public.methods  <- names(ExtendedDef@refMethods)
-    static.methods  <- names(ExtendedDef@static.methods)
-
-    local.fields <- c( private.fields, public.fields)
-    writable.fields <- c( local.fields, static.fields)
-    all.fields <- c( writable.fields, const.fields)
-
-    all.methods <- c( private.methods, public.methods, static.methods)
-
-    assert_that(!anyDuplicated(all.fields)
-               , msg = "Field names cannot appear in more than one scope.")
-    assert_that(!anyDuplicated(all.methods)
-               , msg = "Method names cannot appear in more than one scope.")
-
-    for (method in as.list(ExtendedDef@static.methods)){
-        .checkFieldsInMethod( method
-                            , names(ExtendedDef@static)
-                            , names(ExtendedDef@static.methods)
-                            )}
-    for (method in as.list(ExtendedDef@private.library))
-        .checkFieldsInMethod( method, writable.fields, all.methods)
-    for (method in as.list(ExtendedDef@refMethods))
-        .checkFieldsInMethod( method, writable.fields, all.methods)
-    invisible(ExtendedDef)
-}
-
-
-
+})

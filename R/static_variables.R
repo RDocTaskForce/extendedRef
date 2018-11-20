@@ -11,15 +11,15 @@ setAs('classGeneratorFunction', 'classRepresentation', function(from)getClass(fr
 
 # classStaticEnv ----------------------------------------------------------
 #' Static and Static Const Variable Environments
-#' 
+#'
 #' Static environments contain variables that are common to all
-#' instances of a class.  Static Const variables are accessible to 
+#' instances of a class.  Static Const variables are accessible to
 #' all class objects but cannot be changed.
-#' 
+#'
 #' @inheritParams TypedEnvironment
 #' @param initialized.name Name of the variable which indicates if the environment has been initialized or not.
 #' @param initialized.state The initial state of the initialized variable named in `initialized.name`
-#' @param className is used in assigning the resulting environment name. 
+#' @param className is used in assigning the resulting environment name.
 #' @param ... arguments to initialize.
 #'
 new_static_env <-
@@ -34,11 +34,11 @@ setMethod('initialize', 'classStaticEnv', initialize <-
           , initialized.state = is.null(initializer)
           , className = NULL
           ){
-    classes = c(classes, setNames('logical', initialized.name)) 
+    classes = c(classes, setNames('logical', initialized.name))
     if (is.null(initializer))
         .Object@.xData[[initialized.name]] <- TRUE
     else {
-        body(initializer) <- 
+        body(initializer) <-
         `c.{`( body(initializer)
              , substitute({
                               static.initialized <<- TRUE
@@ -56,7 +56,7 @@ setMethod('initialize', 'classStaticEnv', initialize <-
                              , self.name=self.name, initializer=initializer)
     if (!is.null(initialized.name) && assert_that(is.string(initialized.name)))
         assign(initialized.name, initialized.state, .Object@.xData)
-    
+
     attr(.Object@.xData, 'name') <- if(is.null(className)) 'Static Environment' else
         paste(className, 'Static Environment')
     return(.Object)
@@ -108,6 +108,13 @@ if(FALSE){#@testing
                          ))
     expect_identical(const.env$flag, TRUE)
     expect_identical(const.env$char, 'a')
+
+    expect_identical(environmentName(const.env), "Static Const Environment")
+
+    const.w.name <- static_const(list( flag = TRUE, char = 'a')
+                                , className = "test-class" )
+    expect_identical(environmentName(const.w.name), "test-class Static Const Environment")
+    expect_true(environmentIsLocked(const.w.name))
 
     expect_error(const.env$flag <- FALSE)
     expect_error(const.env$char <- 'b')

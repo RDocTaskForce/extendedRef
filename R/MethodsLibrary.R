@@ -8,23 +8,23 @@
 #' @description
 #' A methods library is a container for methods of a specific type.
 #' All objects in the library should be functions of type `method.type`.
-#' One exception is made for objects that points back to the 
+#' One exception is made for objects that points back to the
 #' library object, ie. a self referential object.
-#' 
-#' @slot method.type A string giving the type of method expected, 
-#'                   the type should inherit from 'function', and 
+#'
+#' @slot method.type A string giving the type of method expected,
+#'                   the type should inherit from 'function', and
 #'                   preferrably from [refMethodDef][ReferenceClasses].
-# @slot  methods The list of methods to include in the library.  
+# @slot  methods The list of methods to include in the library.
 #                Methods will be converted to the appropriate type automatically.
 # @slot method.parent The parent environment for methods within the library.
 #                     Defaults to the library environment itself.
 # @slot parent The parent environment for the library.
 #              Defaults to the calling frame.
-# @slot .lock A logical flag indicating if the library is to be locked and 
+# @slot .lock A logical flag indicating if the library is to be locked and
 #             prevent adding or changing definitions.
 #             Default is to lock if methods are provided.
 #'
-MethodsLibrary <- 
+MethodsLibrary <-
 setClass( 'MethodsLibrary'
         , contains = 'environment'
         , slots = c(method.type = 'character')
@@ -61,7 +61,7 @@ function(.Object
     .Object <- callNextMethod(.Object)
     if (!is.null(parent) && assert_that(is.environment(parent)))
         parent.env(.Object@.xData) <- parent
-    else 
+    else
         parent.env(.Object@.xData) <- parent.frame(1L)
     assert_that(is.string(method.type))
     .Object@method.type <- method.type
@@ -79,7 +79,7 @@ function(.Object
         if (!is(methods[[i]], method.type)) {
             name <- names(methods)[[i]]
             method <- new( method.type, method, name=name, ...)
-        } else 
+        } else
             name <- method@name
         environment(method@.Data) <- method.parent
         assign(name, method, envir = .Object@.xData)
@@ -87,17 +87,15 @@ function(.Object
     if (.lock) lockEnvironment(.Object@.xData, bindings = TRUE)
     return(.Object)
 })
-if(FALSE){#@testing 
+if(FALSE){#@testing
     expect_is(lib <- new('MethodsLibrary'), 'MethodsLibrary')
-    
+
     parent <- s(new.env(), name = 'test methods parent')
-    
-    trace('initialize', signature = 'MethodsLibrary', browser)
+
     lib <- new('MethodsLibrary'
               , list(say_hi = function()cat('hi\n'))
               , method.parent = parent
               )
     expect_length(ls(lib, all=TRUE), 1L)
-
     expect_identical(environment(lib$say_hi), parent)
 }

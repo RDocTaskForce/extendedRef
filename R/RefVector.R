@@ -3,7 +3,7 @@ utils::globalVariables(c('.', 'equals', '.refClassDef'))
 
 ### Reference Vectors #####
 #' Reference Vectors and Reference Sets
-#' 
+#'
 #' Reference vectors act similar to lists, but have the additional
 #' restriction that all elements must be of the same type.
 #' Reference Sets, Collections of unique objects.
@@ -11,14 +11,14 @@ utils::globalVariables(c('.', 'equals', '.refClassDef'))
 #' A reference set is defined as a collection of unique objects.
 #' The difference from reference vectors in that they
 #' do not allow duplicate objects.
-#' 
+#'
 #' @param element The type of element allowed.
 #' @param Class   The Class name for the vector.
 #' @param condition.already.contains The condition to raise if the
 #'            set already contains the object being added.
 #' @inheritParams setExtendedRefClass
 #' @inheritDotParams setExtendedRefClass
-#' 
+#'
 setRefVector <-
 function( element
         , Class = paste0("ReferenceVector<", element, ">")
@@ -38,7 +38,7 @@ function( element
     if (assert_that('.' %!in% names(private))){
         private <- c(private, '.' = 'list')
     }
-    if ('initialize' %!in% names(methods)) 
+    if ('initialize' %!in% names(methods))
         methods[["initialize"]] <- function(...) { if (nargs()) .self$add(...) }
     if ('validate' %!in% names(methods))
         methods[['validate']] <- function(){validate_that(all_inherit(., element))}
@@ -59,11 +59,11 @@ function( element
             . <<- c(., l)
             invisible(.self)
         }
-    if ('get' %!in% names(methods)) 
+    if ('get' %!in% names(methods))
         methods[['get']] <- function(...){.[[...]]}
     if ('set' %!in% names(methods))
         methods[['set']] <- function(..., value){.[[...]] <<- value; invisible(.self)}
-    if ('length' %!in% names(methods)) 
+    if ('length' %!in% names(methods))
         methods[['length']] <- function(x){if(missing(x)) base::length(.) else base::length(x)}
     if ('names' %!in% names(methods))
         methods[['names']]  <- function(x){if(missing(x)) base::names(.)  else base::names(x)}
@@ -83,13 +83,13 @@ function( element
         if (!isTRUE(attr(object@.xData, 'extended.initialized'))) return(TRUE)
         object$validate()
     }, where=where)
-    
+
     setMethod('[['    , c(Class, 'ANY'), function(x, i, ...)x$get(i, ...), where = where)
     setMethod('[[<-'  , c(Class, 'ANY'), function(x, i, ..., value)x$set(i,..., value=value), where = where)
     setMethod('length', Class, function(x)x$length(), where = where)
     setMethod('names' , Class, function(x)x$names(), where = where)
     setMethod('as.list', Class, function(x, ...)x$as.list(), where = where)
-    
+
     return(invisible(generator))
 }
 if(FALSE){#@testing
@@ -100,7 +100,7 @@ if(FALSE){#@testing
     expect_identical(def@private.classes, c(.='list'))
     expect_identical( ls(def@private.library, all=TRUE)
                     , c('.__initialize__.', '.private.methods.library'))
-    
+
     bare <- test_vector()
     expect_is(bare, "ReferenceVector<logical>")
     expect_length(bare, 0L)
@@ -128,6 +128,8 @@ if(FALSE){#@testing
 
     with(val@.xData, . <<- as.list(letters[1:5]))
     expect_false(val$is_valid())
+
+    expect_true(removeClass(test_vector@className))
 }
 if(FALSE){#@testing
     refList <- setRefVector('ANY', 'refList')
@@ -146,6 +148,8 @@ if(FALSE){#@testing
 
     expect_length(val, 4L)
     expect_null(names(val))
+
+    expect_true(removeClass(refList@className))
 }
 
 ### Reference Set #####
@@ -157,7 +161,7 @@ function( element
         , ...
         , static.const = list()
         , static.methods = list()
-        , condition.already.contains = 
+        , condition.already.contains =
                 c('message', 'warning', 'error', 'none')
                 #< Type of condition to raise if object is
                 #< already contained in the collection.
@@ -205,8 +209,8 @@ function( element
         }
     if (assert_that("condition.already.contains" %!in% names(static.const)))
         static.const[['condition.already.contains']]  <- condition.already.contains
-    
-    
+
+
     if ('equals' %in% names(static.methods)){
        assert_that( is.function(static.methods$equals)
                   , number_of_arguments(static.methods$equals) >= 2
@@ -223,10 +227,14 @@ function( element
     return(invisible(generator))
 }
 if(FALSE){#@testing
-    test_class <- setClass("test-class", list(name='character', age = 'numeric'))
-    test_set <- setRefSet( 'test-class'
+    if (exists(classMetaName("test-element"), globalenv()))
+        removeClass("test-element", globalenv())
+    test_class <- setClass("test-element", list(name='character', age = 'numeric'), where = globalenv() )
+    expect_is(elem <- test_class(name = 'object 1', age = 0L), 'test-element')
+
+    test_set <- setRefSet( 'test-element'
                          , where = globalenv()
-                         , static.const = list(
+                         , static.methods = list(
                              equals = function(x, y) x@name == y@name
                             )
                          )
@@ -234,15 +242,26 @@ if(FALSE){#@testing
     expect_is(test_set, 'refObjectGenerator')
 
     my.set <- test_set()
-    expect_is(my.set, 'ReferenceSet<test-class>')
+    expect_is(my.set, 'ReferenceSet<test-element>')
     expect_length(my.set, 0L)
 
-    my.set$add(elem <- test_class(name = 'object 1', age = 0L))
+    expect_is(elem <- test_class(name = 'object 1', age = 0L), 'test-element')
+    expect_equal(my.set$add(elem), my.set)
     expect_length(my.set, 1L)
 
+    expect_equal( body(get('equals', my.set))
+                , rlang::expr(x@name == y@name)
+                )
+
+    expect_message( my.set$add(elem)
+                  , class = "RefSet(Documentation)-message-already.contains"
+                  )
     expect_message( my.set$add(test_class(name = 'object 1', age = 1L))
                   , class = "RefSet(Documentation)-message-already.contains"
                   )
     my.set$add(test_class(name='another'))
     expect_length(my.set, 2L)
+
+    expect_true(removeClass("test-element", globalenv()))
+    expect_true(removeClass("ReferenceSet<test-element>", globalenv()))
 }
