@@ -14,16 +14,18 @@ LazyData: true
 Depends: R(>= 3.5.0)
 Imports: 
   assertthat,
+  methods,
+  pkgcond,
   purrr,
   rlang,
-  methods,
   stats,
-  pkgcond,
+  testextra,
   utils
 Suggests:
-    testthat,
+    covr,
     knitr,
-    covr
+    testthat,
+    withr
 Language: en-US
 Roxygen: list(markdown = TRUE, roclets = c("rd"))
 RoxygenNote: 6.1.1

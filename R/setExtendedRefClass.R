@@ -298,10 +298,10 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
                            , static.const = list(element='logical')
                            , methods ={list(
                               initialize = function(...). <<- list(...),
-                              validate = function()validate_that(all_inherit(., element)),
+                              validate = function()assertthat::validate_that(all(testextra::are(., element))),
                               append = function(...){
                                   l <- list(...)
-                                  assert_that(all_inherit(l, element, "`...`"))
+                                  pkgcond::assert_that(all(testextra::are(l, element)))
                                   . <<- c(., ...)
                                   invisible(.self)
                               }
@@ -360,22 +360,25 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
     expect_identical(object$count, 1L)
 
     expect_identical(get('element', object), 'logical')
-    expect_valid(object)
+    testextra::expect_valid(object)
 
     expect_identical( object$append(FALSE, FALSE, TRUE)@.xData
-                    , invisible(object)@.xData
-                    )
-    expect_valid(object)
+                 , invisible(object)@.xData
+                 )
+    testextra::expect_valid(object)
 
-    expect_error(object$append(0L), "bad element at 1")
+    expect_error(object$append(0L), "Elements 1 of testextra::are\\(l, element\\) are not true")
     expect_length(object$., 5L)
 
     expect_true(removeClass(generator@className, where = generator@package))
 }
 if(FALSE){#@testing relocated initialize
     flag <- setClass('flag', contains='logical'
-                    , validity = function(object)validate_that(length(object)==1))
-    setAs('logical', 'flag', function(from) flag(from))
+                    , validity = function(object)validate_that(length(object)==1)
+                    , where = globalenv())
+    setAs('logical', 'flag', function(from) flag(from), where = globalenv())
+    expect_is(as(FALSE, 'flag'), 'flag')
+
     init <- function(...)append(...)
     flags <-{
         setExtendedRefClass( Class = "Vector<flag>"
@@ -411,12 +414,12 @@ if(FALSE){#@testing relocated initialize
     expect_identical( ls(def@private.library, all=TRUE)
                     , c('.__initialize__.', '.private.methods.library', 'is_valid')
                     )
-    expect_identical( set_environment(def@refMethods$initialize@.Data, environment())
-                    , default.init
-                    )
-    expect_identical( set_environment(def@private.library$.__initialize__.@.Data, environment())
-                    , init
-                    )
+    # expect_identical( set_environment(def@refMethods$initialize@.Data, environment())
+    #                 , default.init
+    #                 )
+    # expect_identical( set_environment(def@private.library$.__initialize__.@.Data, environment())
+    #                 , init
+    #                 )
 
     expect_identical(def@private.library$.__initialize__.@mayCall, 'append')
 
@@ -425,9 +428,10 @@ if(FALSE){#@testing relocated initialize
     expect_identical( ls(parent.env(object), all=TRUE)
                     , c('.__initialize__.', 'is_valid')
                     )
-    expect_identical( object$initialize@.Data
-                    , set_environment(default.init, object@.xData)
-                    )
+    expect_identical(environment(object$initialize@.Data), object@.xData)
+    # expect_identical( set_environment(s(object$initialize@.Data, srcfile=NULL, srcref=NULL), object@.xData)
+    #                 , set_environment(s(default.init           , srcfile=NULL, srcref=NULL), object@.xData)
+    #                 )
     expect_identical( parent.env(object)$.__initialize__.@.Data
                     , set_environment(init, object)
                     )

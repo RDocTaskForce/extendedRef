@@ -2,9 +2,9 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `RefVector.R`')
-#line 95 "C:/rdtf/extendedRef/R/RefVector.R"
+#line 95 "R/RefVector.R"
 test_that('setRefVector', {#@testing
-    expect_silent(test_vector <- setRefVector('logical'))
+    test_vector <- setRefVector('logical')
     expect_is(test_vector, 'extendedRefObjectGenerator')
 
     expect_is(def <- test_vector$def, 'extendedRefClassDefinition')
@@ -42,7 +42,7 @@ test_that('setRefVector', {#@testing
 
     expect_true(removeClass(test_vector@className))
 })
-#line 134 "C:/rdtf/extendedRef/R/RefVector.R"
+#line 134 "R/RefVector.R"
 test_that('setRefVector', {#@testing
     refList <- setRefVector('ANY', 'refList')
     val <- refList('a', 1L, TRUE)
@@ -63,7 +63,7 @@ test_that('setRefVector', {#@testing
 
     expect_true(removeClass(refList@className))
 })
-#line 229 "C:/rdtf/extendedRef/R/RefVector.R"
+#line 229 "R/RefVector.R"
 test_that('setRefSet', {#@testing
     if (exists(classMetaName("test-element"), globalenv()))
         removeClass("test-element", globalenv())
@@ -84,7 +84,8 @@ test_that('setRefSet', {#@testing
     expect_length(my.set, 0L)
 
     expect_is(elem <- test_class(name = 'object 1', age = 0L), 'test-element')
-    expect_equal(my.set$add(elem), my.set)
+    val <- my.set$add(elem)
+    expect_equal(val, my.set)
     expect_length(my.set, 1L)
 
     expect_equal( body(get('equals', my.set))

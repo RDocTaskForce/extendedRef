@@ -38,9 +38,10 @@ if(FALSE){#@testing
     expect_null(bare@static.const)
     expect_null(bare@static.methods)
 
-    if (exists(classMetaName('test')))
-        try(removeClass('test'), silent = TRUE)
-    ref_generator <- setRefClass('test', fields = list(count = 'integer'))
+    if (exists(classMetaName('test'), where = globalenv()))
+        try(removeClass('test', where = globalenv()), silent = TRUE)
+    ref_generator <- setRefClass('test', fields = list(count = 'integer')
+                                , where = globalenv() )
     ref.def <- ref_generator$def
 
     private.classes = c(count.when.created = 'integer')
@@ -72,7 +73,7 @@ if(FALSE){#@testing
     expect_identical(wprivate@static$count, 0L)
     expect_true(wprivate@static$static.initialized)
 
-    expect_true(removeClass(ref_generator@className))
+    removeClass(ref_generator@className, where = globalenv())
 }
 setAs('extendedRefClassDefinition', 'StaticTriad', function(from){
     new('StaticTriad', const   = from@static.const
@@ -170,6 +171,6 @@ if(FALSE){#@testing extendedRefObjectGenerator
     expect_is(.Object, 'extendedRefObjectGenerator')
     expect_identical(.Object@static, .Object@generator$static)
 
-    expect_true(removeClass(super@className))
+    expect_true(removeClass('test'))
 }
 

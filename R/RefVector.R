@@ -41,7 +41,7 @@ function( element
     if ('initialize' %!in% names(methods))
         methods[["initialize"]] <- function(...) { if (nargs()) .self$add(...) }
     if ('validate' %!in% names(methods))
-        methods[['validate']] <- function(){validate_that(all_inherit(., element))}
+        methods[['validate']] <- function(){validate_that(all(are(., element)))}
     if ('is_valid' %!in% names(methods))
         methods[['is_valid']] <- function(){
             valid <- .self$validate()
@@ -55,7 +55,7 @@ function( element
                 if (!is(l[[i]], element))
                     try(l[[i]] <- as(l[[i]], element))
             }
-            assert_that(all_inherit(l, element, "`...`"))
+            pkgcond::assert_that(all(testextra::are(l, element)))
             . <<- c(., l)
             invisible(.self)
         }
@@ -93,7 +93,7 @@ function( element
     return(invisible(generator))
 }
 if(FALSE){#@testing
-    expect_silent(test_vector <- setRefVector('logical'))
+    test_vector <- setRefVector('logical')
     expect_is(test_vector, 'extendedRefObjectGenerator')
 
     expect_is(def <- test_vector$def, 'extendedRefClassDefinition')
@@ -176,9 +176,9 @@ function( element
                )
     if (!('validate' %in% names(methods)))
         methods[['validate']] <- function(){
-            validate_that( all_inherit(., element)
-                         , !anyDuplicated(.)
-                         )
+            assertthat::validate_that( all(testextra::are(., element))
+                                     , !anyDuplicated(.)
+                                     )
         }
     if (!('add' %in% names(methods)))
         methods[['add']] <- function(...){
@@ -187,7 +187,7 @@ function( element
                 if (!is(l[[i]], element))
                     try(l[[i]] <- as(l[[i]], element))
                 if (any(purrr::map_lgl(., equals, l[[i]]))) {
-                    pkgcond::condition( ._('Set already contains the element given at position %d.', i)
+                    pkgcond::condition( pkgcond::._('Set already contains the element given at position %d.', i)
                                       , condition.already.contains
                                       , type = "already.contains"
                                       , scope = c( .refClassDef@package
@@ -197,7 +197,7 @@ function( element
                     l <- l[-i]
                 }
             }
-            pkgcond::assert_that( all_inherit(l, element, "`...`")
+            pkgcond::assert_that( all(testextra::are(l, element))
                                 , !anyDuplicated(l))
             l <- c(., l)
             . <<- l
@@ -246,7 +246,8 @@ if(FALSE){#@testing
     expect_length(my.set, 0L)
 
     expect_is(elem <- test_class(name = 'object 1', age = 0L), 'test-element')
-    expect_equal(my.set$add(elem), my.set)
+    val <- my.set$add(elem)
+    expect_equal(val, my.set)
     expect_length(my.set, 1L)
 
     expect_equal( body(get('equals', my.set))

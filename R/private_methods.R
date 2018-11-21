@@ -172,22 +172,22 @@ setMethod('initialize', 'objectPrivateMethods', initialize <-
                   return(.Object)
               })
 if(FALSE){#@testing
-    if (exists(classMetaName('test-class')))
-        try(removeClass('test-class'), TRUE)
-    test_class <- setRefClass('test-class')
+    if (exists(classMetaName('test-class'), where = globalenv()))
+        try(removeClass('test-class', where = globalenv()), TRUE)
+    test_class <- setRefClass('test-class', where = globalenv())
     library <- privateMethodsLibrary()
     test.obj <- test_class()
     .Object <- private_methods(test.obj, library)
 
     expect_identical(ls(.Object, all=TRUE), character())
-    expect_true(removeClass(test_class$def@className))
-    if (exists(classMetaName('test-class')))
-        try(removeClass('test-class'), TRUE)
+    expect_true(removeClass('test-class', where = globalenv()))
+    if (exists(classMetaName('test-class'), where = globalenv()))
+        try(removeClass('test-class', where = globalenv()), TRUE)
 }
 if(FALSE){#@testing
-    if (exists(classMetaName('test-class')))
-        try(removeClass('test-class'), TRUE)
-    test_class <- setRefClass('test-class')
+    if (exists(classMetaName('test-class'), where = globalenv()))
+        try(removeClass('test-class', where = globalenv()), TRUE)
+    test_class <- setRefClass('test-class', where = globalenv())
     classDef <- test_class$def
     expect_is(classDef, "refClassRepresentation")
 
@@ -204,7 +204,7 @@ if(FALSE){#@testing
     expect_equal( ls(test.methods, all=TRUE), c('hw'))
     expect_identical(environment(test.methods$hw), test.obj@.xData)
 
-    expect_true(removeClass(test_class$def@className))
+    expect_true(removeClass(test_class$def@className, where = globalenv()))
 }
 if(FALSE){#@testing private_methods with .
     Class <- "test with ."
