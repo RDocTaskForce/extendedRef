@@ -7,9 +7,10 @@ cache: packages
 r_github_packages:
   - jimhester/covr
   - RDocTaskForce/pkgcond
-  
+  - RDocTaskForce/testextra
+
 r_packages:
   - testthat
-  
+
 after_success:
   - Rscript -e 'covr::codecov()'
