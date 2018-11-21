@@ -30,8 +30,10 @@ setClass( 'MethodsLibrary'
         , slots = c(method.type = 'character')
         , prototype = list(method.type='refMethodDef')
         )
-setValidity('MethodsLibrary', validity <- function(object){
+# * Validity =====
+setValidity('MethodsLibrary', function(object){
   list.object <- as.list(object)
+  if (length(list.object) == 0) return(TRUE)
   are.valid <- are(list.object, object@method.type) &
                are_valid(list.object, simplify=TRUE)
   if (all(are.valid)) return(TRUE)
@@ -49,7 +51,8 @@ setValidity('MethodsLibrary', validity <- function(object){
            , object@method.type
            )
 })
-setMethod('initialize', 'MethodsLibrary', initialize <-
+# * Initialize ----
+setMethod('initialize', 'MethodsLibrary',
 function(.Object
         , methods=list()
         , method.type='refMethodDef'
@@ -87,15 +90,37 @@ function(.Object
     if (.lock) lockEnvironment(.Object@.xData, bindings = TRUE)
     return(.Object)
 })
+# __+ testing ####
 if(FALSE){#@testing
     expect_is(lib <- new('MethodsLibrary'), 'MethodsLibrary')
+    testextra::expect_valid(lib)
 
     parent <- s(new.env(), name = 'test methods parent')
 
     lib <- new('MethodsLibrary'
               , list(say_hi = function()cat('hi\n'))
               , method.parent = parent
+              , .lock=FALSE
               )
     expect_length(ls(lib, all=TRUE), 1L)
     expect_identical(environment(lib$say_hi), parent)
+    testextra::expect_valid(lib)
+
+    expect_false(environmentIsLocked(lib))
+    assign('.self', lib, envir=lib@.xData)
+    testextra::expect_valid(lib)
+
+    assign('say_goodby', 'goodby', envir=lib@.xData)
+    expect_error( validObject(lib), "Element say_goodby is not a valid refMethodDef object")
+
+    rm(say_goodby, envir = lib)
+    copy <- new('MethodsLibrary'
+               , methods = lib
+               , method.parent = emptyenv()
+               , parent = globalenv()
+               )
+    expect_identical(parent.env(copy), globalenv())
+    expect_identical(environment(copy$say_hi), emptyenv())
+    expect_false(exists('.self', copy))
+    expect_true(environmentIsLocked(copy))
 }
