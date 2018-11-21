@@ -2,7 +2,7 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `ExtendedRefClass.R`')
-#line 33 "R/ExtendedRefClass.R"
+#line 33 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
 test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     bare <- new('extendedRefClassDefinition')
     expect_null(bare@private.library)
@@ -11,6 +11,13 @@ test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     expect_null(bare@static.const)
     expect_null(bare@static.methods)
 
+    expect_is(triad <- as(bare, 'StaticTriad'), "StaticTriad")
+    expect_null(triad$vars)
+    expect_null(triad$methods)
+    expect_null(triad$const)
+})
+#line 46 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
+test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     if (exists(classMetaName('test'), where = globalenv()))
         try(removeClass('test', where = globalenv()), silent = TRUE)
     ref_generator <- setRefClass('test', fields = list(count = 'integer')
@@ -46,9 +53,14 @@ test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     expect_identical(wprivate@static$count, 0L)
     expect_true(wprivate@static$static.initialized)
 
+    expect_is(triad <- as(wprivate, 'StaticTriad'), 'StaticTriad')
+    expect_identical(triad$vars, static)
+    expect_identical(triad$const, static.const)
+    expect_identical(triad$methods, static.methods)
+
     removeClass(ref_generator@className, where = globalenv())
 })
-#line 165 "R/ExtendedRefClass.R"
+#line 176 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
 test_that('extendedRefObjectGenerator', {#@testing extendedRefObjectGenerator
     if (exists(classMetaName('test')))
         try(removeClass('test'), TRUE)
