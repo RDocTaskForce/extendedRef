@@ -10,6 +10,17 @@ s <- function( .Data, ...){
         attr(.Data, a) <- new.attr[[a]]
     return(.Data)
 }
+if(FALSE){#@testing
+    val <- s(FALSE, msg="hello there")
+    expect_identical(attributes(val), list(msg='hello there'))
+
+    name = 'frosty'
+    val <- s(FALSE, name)
+    expect_identical(attributes(val), list(name=name))
+
+    val <- s(FALSE, msg="hello there", name)
+    expect_identical(attributes(val), list(msg='hello there', name=name))
+}
 
 ngettextf <-
     function( n
@@ -21,14 +32,26 @@ ngettextf <-
         if (n<=1) gettextf(msg1, ..., domain = domain)
         else gettextf(msg2, ..., domain = domain)
     }
+if(FALSE){#@testing
+    who_mad <- function(mad.bears)
+        ngettextf(length(mad.bears), "%2$s the bear was mad."
+                      , "The %1$d bears, %2$s, were mad."
+                      , length(mad.bears), comma_list(mad.bears))
+
+    expect_identical(who_mad('Baloo'), "Baloo the bear was mad.")
+    expect_identical(who_mad(c('Papa Bear', 'Mama Bear', 'Baby Bear'))
+                    , "The 3 bears, Papa Bear, Mama Bear, and Baby Bear, were mad." )
+}
+
 
 set_environment <- function(fun, envir){
     environment(fun) <- envir
     return(fun)
 }
 
+
 ._not_implemented <- function(object, ...)
-    stop("not implimented for class", paste(class(object)), collapse='/')
+    stop("not implimented for class", paste(class(object)), collapse='/') # nocov
 
 
 `%!in%` <- Negate(`%in%`)
@@ -39,7 +62,7 @@ set_environment <- function(fun, envir){
 }
 
 
-setInitialize <- function(...)setMethod(f = 'initialize', ...)
+setInitialize <- function(...)setMethod(f = 'initialize', ...) # nocov
 
 .checkFieldsInMethod <-
     get('.checkFieldsInMethod', asNamespace('methods'))
