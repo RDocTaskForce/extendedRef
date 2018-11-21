@@ -1,12 +1,9 @@
-make_class_optional <-
-function( className
-        , name = paste0('optional-', className)
-        , where = topenv(parent.frame())
-        ){
-    setClassUnion(name, className, where=where)
-    setIs('NULL', name, where=where)
-}
-if(FALSE){#@testing
+#! This file was automatically produced by the testextra package.
+#! Changes will be overwritten.
+
+context('tests extracted from file `util-make_class_optional.R`')
+#line 9 "C:/rdtf/extendedRef/R/util-make_class_optional.R"
+test_that('make_class_optional', {#@testing
     if (exists(classMetaName('test'), where=globalenv()))
         removeClass('test', where=globalenv())
     new_test <- setClass('test', representation = list(a='logical'), where=globalenv())
@@ -21,4 +18,4 @@ if(FALSE){#@testing
 
     expect_true(removeClass('optional-test', where=globalenv()))
     expect_true(removeClass('test', where=globalenv()))
-}
+})
