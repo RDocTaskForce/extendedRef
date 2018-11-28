@@ -2,7 +2,7 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `MethodsLibrary.R`')
-#line 91 "C:/rdtf/extendedRef/R/MethodsLibrary.R"
+#line 94 "R/MethodsLibrary.R"
 test_that('initialize,MethodsLibrary-method', {#@testing
     expect_is(lib <- new('MethodsLibrary'), 'MethodsLibrary')
     testextra::expect_valid(lib)

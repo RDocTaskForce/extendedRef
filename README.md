@@ -62,7 +62,7 @@ counter <-
         # methods as with setRefClass defines the public methods.
         methods = list( increment = function()count <<- count + 1L
                       , get_count = function()count
-                      ),
+                      )
         # note that the public function alters a 'private' variable.
         )
 ```

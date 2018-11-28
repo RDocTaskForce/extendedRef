@@ -2,7 +2,7 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `TypedEnvironment.R`')
-#line 79 "C:/rdtf/extendedRef/R/TypedEnvironment.R"
+#line 79 "R/TypedEnvironment.R"
 test_that('initialize,TypedEnvironment-method', {#@testing
     expect_is(bare <- new('TypedEnvironment'), 'TypedEnvironment')
     expect_identical(ls(bare, all=TRUE), character())
