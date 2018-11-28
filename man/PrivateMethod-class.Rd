@@ -11,12 +11,12 @@
 \arguments{
 \item{thing}{an object of class \code{className}.}
 
-\item{library}{a privateMethodsLibrary object.}
+\item{library}{a \code{privateMethodsLibrary} object.}
 }
 \description{
 Private methods are functions that are intended for internal use.
 They do not appear when listing the contents of a reference object.
-They are available to the publid methods to call but cannot be accessed
+They are available to the public methods to call but cannot be accessed
 through the \code{object$method()} mechanism that public methods are.
 
 Private methods are stored in a \code{privateMethodsLibrary} object

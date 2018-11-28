@@ -11,8 +11,8 @@ setRefVector(element, Class = paste0("ReferenceVector<", element, ">"),
 
 setRefSet(element, Class = paste0("ReferenceSet<", element, ">"),
   methods = list(), ..., static.const = list(),
-  condition.already.contains = c("message", "warning", "error", "none"),
-  where = topenv(parent.frame()))
+  static.methods = list(), condition.already.contains = c("message",
+  "warning", "error", "none"), where = topenv(parent.frame()))
 }
 \arguments{
 \item{element}{The type of element allowed.}
@@ -42,6 +42,8 @@ setRefSet(element, Class = paste0("ReferenceSet<", element, ">"),
 }}
 
 \item{where}{see \link{ReferenceClasses}}
+
+\item{static.methods}{List of static methods.}
 
 \item{condition.already.contains}{The condition to raise if the
 set already contains the object being added.}

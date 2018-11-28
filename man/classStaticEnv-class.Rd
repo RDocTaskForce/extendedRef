@@ -18,6 +18,6 @@
 }
 \description{
 Static environments contain variables that are common to all
-instances of a class.  Static Const variables are accessible to
+instances of a class.  Static const variables are accessible to
 all class objects but cannot be changed.
 }

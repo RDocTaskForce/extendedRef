@@ -13,21 +13,21 @@
 \S4method{$}{StaticTriad}(x, name) <- value
 }
 \arguments{
-\item{x}{A StaticTriad Object}
+\item{x}{A \code{StaticTriad} Object}
 
 \item{name}{The name of the constant, variable, or method}
 
 \item{value}{The replacement value for variables only.}
 }
 \description{
-The static triad consists of a const environment for constants,
-a vars environment for variables, and a methods environment for methods.
+The static triad consists of a \code{$const} environment for constants,
+a \code{$vars} environment for variables, and a \code{$methods} environment for methods.
 }
 
 \section{Methods}{
 
 \itemize{
-\item \code{$} is definded to make all variables, constants and
+\item \code{$} is defined to make all variables, constants and
 methods visible through the single object.
 \item \code{$<-} Does the same but protects constants and methods
 from being overwritten.

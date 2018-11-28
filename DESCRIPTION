@@ -6,7 +6,7 @@ Author: Andrew Redd
 Maintainer: Andrew Redd <andrew.redd@hsc.utah.edu>
 Description: Provides the support for reference classes that can contain
    static variables (variables that are common to all objects),
-   static const variables ad private methods (methods that are hidden 
+   constant static variables ad private methods (methods that are hidden 
    from the public interface, but not necessarily inaccessible).
 License: GPL-2
 Encoding: UTF-8
@@ -14,18 +14,21 @@ LazyData: true
 Depends: R(>= 3.5.0)
 Imports: 
   assertthat,
+  methods,
+  pkgcond,
   purrr,
   rlang,
-  methods,
   stats,
-  pkgcond,
+  testextra,
   utils
 Suggests:
-    testthat,
+    covr,
     knitr,
-    covr
+    testthat,
+    withr
+Language: en-US
 Roxygen: list(markdown = TRUE, roclets = c("rd"))
-RoxygenNote: 6.1.0.9000
+RoxygenNote: 6.1.1
 URL: https://github.com/RDocTaskForce/extendedRef
 VignetteBuilder: knitr
 Remotes:

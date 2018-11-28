@@ -3,12 +3,12 @@
 
 #' @title Static Methods
 #' @description
-#' Static methods denote functions that are intended to act on 
-#' class static variables only.  They inherit from refMethodDef,
-#' and use the same initializers and methods.  
-#' 
+#' Static methods denote functions that are intended to act on
+#' class static variables only.  They inherit from [`refMethodDef`][ReferenceClasses],
+#' and use the same methods.
+#'
 #' @inheritParams MethodsLibrary
-#' 
+#'
 setClass('StaticMethod', contains = 'refMethodDef')
 if(FALSE){#@testing
     def <- function().count <<- 0L
@@ -49,10 +49,10 @@ function( .Object
 if(FALSE){#@testing
     expect_is(bare <- static_methods(), 'StaticMethods')
     expect_length(as.list(bare, all=TRUE), 0L)
-    
+
     expect_is(lib <- static_methods(list(say_hi= function(){cat('hi\n')})), 'StaticMethods')
     expect_length(ls(lib, all=TRUE), 1L)
-    
+
     expect_is(lib$say_hi, 'StaticMethod')
     expect_identical(environment(lib$say_hi), lib@.xData)
 }

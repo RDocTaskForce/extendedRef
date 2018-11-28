@@ -8,30 +8,32 @@
 #' @description
 #' A methods library is a container for methods of a specific type.
 #' All objects in the library should be functions of type `method.type`.
-#' One exception is made for objects that points back to the 
-#' library object, ie. a self referential object.
-#' 
-#' @slot method.type A string giving the type of method expected, 
-#'                   the type should inherit from 'function', and 
-#'                   preferrably from [refMethodDef][ReferenceClasses].
-# @slot  methods The list of methods to include in the library.  
+#' One exception is made for objects that points back to the
+#' library object, i.e. a self referential object.
+#'
+#' @slot method.type A string giving the type of method expected,
+#'                   the type should inherit from 'function', and
+#'                   preferably from [`refMethodDef`][ReferenceClasses].
+# @slot  methods The list of methods to include in the library.
 #                Methods will be converted to the appropriate type automatically.
 # @slot method.parent The parent environment for methods within the library.
 #                     Defaults to the library environment itself.
 # @slot parent The parent environment for the library.
 #              Defaults to the calling frame.
-# @slot .lock A logical flag indicating if the library is to be locked and 
+# @slot .lock A logical flag indicating if the library is to be locked and
 #             prevent adding or changing definitions.
 #             Default is to lock if methods are provided.
 #'
-MethodsLibrary <- 
+MethodsLibrary <-
 setClass( 'MethodsLibrary'
         , contains = 'environment'
         , slots = c(method.type = 'character')
         , prototype = list(method.type='refMethodDef')
         )
-setValidity('MethodsLibrary', validity <- function(object){
+# * Validity =====
+setValidity('MethodsLibrary', function(object){
   list.object <- as.list(object)
+  if (length(list.object) == 0) return(TRUE)
   are.valid <- are(list.object, object@method.type) &
                are_valid(list.object, simplify=TRUE)
   if (all(are.valid)) return(TRUE)
@@ -49,7 +51,8 @@ setValidity('MethodsLibrary', validity <- function(object){
            , object@method.type
            )
 })
-setMethod('initialize', 'MethodsLibrary', initialize <-
+# * Initialize ----
+setMethod('initialize', 'MethodsLibrary',
 function(.Object
         , methods=list()
         , method.type='refMethodDef'
@@ -61,7 +64,7 @@ function(.Object
     .Object <- callNextMethod(.Object)
     if (!is.null(parent) && assert_that(is.environment(parent)))
         parent.env(.Object@.xData) <- parent
-    else 
+    else
         parent.env(.Object@.xData) <- parent.frame(1L)
     assert_that(is.string(method.type))
     .Object@method.type <- method.type
@@ -79,7 +82,7 @@ function(.Object
         if (!is(methods[[i]], method.type)) {
             name <- names(methods)[[i]]
             method <- new( method.type, method, name=name, ...)
-        } else 
+        } else
             name <- method@name
         environment(method@.Data) <- method.parent
         assign(name, method, envir = .Object@.xData)
@@ -87,17 +90,37 @@ function(.Object
     if (.lock) lockEnvironment(.Object@.xData, bindings = TRUE)
     return(.Object)
 })
-if(FALSE){#@testing 
+# __+ testing ####
+if(FALSE){#@testing
     expect_is(lib <- new('MethodsLibrary'), 'MethodsLibrary')
-    
+    testextra::expect_valid(lib)
+
     parent <- s(new.env(), name = 'test methods parent')
-    
-    trace('initialize', signature = 'MethodsLibrary', browser)
+
     lib <- new('MethodsLibrary'
               , list(say_hi = function()cat('hi\n'))
               , method.parent = parent
+              , .lock=FALSE
               )
     expect_length(ls(lib, all=TRUE), 1L)
-
     expect_identical(environment(lib$say_hi), parent)
+    testextra::expect_valid(lib)
+
+    expect_false(environmentIsLocked(lib))
+    assign('.self', lib, envir=lib@.xData)
+    testextra::expect_valid(lib)
+
+    assign('say_goodby', 'goodby', envir=lib@.xData)
+    expect_error( validObject(lib), "Element say_goodby is not a valid refMethodDef object")
+
+    rm(say_goodby, envir = lib)
+    copy <- new('MethodsLibrary'
+               , methods = lib
+               , method.parent = emptyenv()
+               , parent = globalenv()
+               )
+    expect_identical(parent.env(copy), globalenv())
+    expect_identical(environment(copy$say_hi), emptyenv())
+    expect_false(exists('.self', copy))
+    expect_true(environmentIsLocked(copy))
 }
