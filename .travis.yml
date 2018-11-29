@@ -3,6 +3,9 @@
 language: R
 sudo: false
 cache: packages
+r:
+  - release
+  - devel
 
 r_github_packages:
   - jimhester/covr
@@ -12,6 +15,9 @@ r_github_packages:
 
 r_packages:
   - testthat
+
+before_install:
+  - Rscript -e 'testextra::extract_tests()'
 
 after_success:
   - Rscript -e 'covr::codecov()'
