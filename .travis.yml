@@ -16,7 +16,7 @@ r_github_packages:
 r_packages:
   - testthat
 
-before_install:
+before_script:
   - Rscript -e 'testextra::extract_tests()'
 
 after_success:
