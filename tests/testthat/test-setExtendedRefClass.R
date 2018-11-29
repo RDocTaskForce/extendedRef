@@ -189,10 +189,10 @@ test_that('with all (ExtendedRefClass) #####', {#@testing with all (ExtendedRefC
                            , static.const = list(element='logical')
                            , methods ={list(
                               initialize = function(...). <<- list(...),
-                              validate = function()assertthat::validate_that(all(testextra::are(., element))),
+                              validate = function()assertthat::validate_that(all(sapply(., are, element))),
                               append = function(...){
                                   l <- list(...)
-                                  pkgcond::assert_that(all(testextra::are(l, element)))
+                                  pkgcond::assert_that(all(sapply(l, is, element)))
                                   . <<- c(., ...)
                                   invisible(.self)
                               }
@@ -258,7 +258,7 @@ test_that('with all (ExtendedRefClass) #####', {#@testing with all (ExtendedRefC
                  )
     testextra::expect_valid(object)
 
-    expect_error(object$append(0L), "Elements 1 of testextra::are\\(l, element\\) are not true")
+    expect_error(object$append(0L), "Elements 1 of sapply\\(l, is, element\\) are not true")
     expect_length(object$., 5L)
 
     expect_true(removeClass(generator@className, where = generator@package))
@@ -293,7 +293,7 @@ test_that('relocated initialize', {#@testing relocated initialize
 
                            )}
                            , private.methods ={list(
-                               is_valid = function()see_if(all_inherit(., element))
+                               is_valid = function()see_if(sapply(., is, element))
                                )}
                            , where = globalenv()
                            )}

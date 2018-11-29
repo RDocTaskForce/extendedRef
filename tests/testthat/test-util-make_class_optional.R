@@ -2,7 +2,7 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `util-make_class_optional.R`')
-#line 9 "C:/rdtf/extendedRef/R/util-make_class_optional.R"
+#line 9 "R/util-make_class_optional.R"
 test_that('make_class_optional', {#@testing
     if (exists(classMetaName('test'), where=globalenv()))
         removeClass('test', where=globalenv())

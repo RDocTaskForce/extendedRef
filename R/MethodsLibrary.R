@@ -34,8 +34,8 @@ setClass( 'MethodsLibrary'
 setValidity('MethodsLibrary', function(object){
   list.object <- as.list(object)
   if (length(list.object) == 0) return(TRUE)
-  are.valid <- are(list.object, object@method.type) &
-               are_valid(list.object, simplify=TRUE)
+  are.valid <- sapply(list.object, is, object@method.type) &
+               sapply(lapply(list.object, validObject, test = TRUE), isTRUE)
   if (all(are.valid)) return(TRUE)
   for (i in which(!are.valid)){
       if ( is.environment(list.object[[i]])
@@ -72,7 +72,7 @@ function(.Object
         methods <- if (is.environment(methods)) as.list(methods, all=TRUE) else as.list(methods)
         methods <- methods[!sapply(methods, is.environment)]
     }
-    assert_that(all_inherit(methods, 'function'))
+    assert_that(all(sapply(methods, is.function)))
     if (length(methods)==0) return(.Object)
     else assert_that(rlang::is_dictionaryish(methods))
 

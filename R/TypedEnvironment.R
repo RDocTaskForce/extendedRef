@@ -89,7 +89,7 @@ if(FALSE){#@testing
     expect_identical(typed$char, character())
     expect_identical(typed$fun, new('function'))
     expect_null(typed@initializer)
-    expect_valid(typed)
+    testextra::expect_valid(typed)
 
     expect_is( named <- new('TypedEnvironment', c(int = 'integer', char = 'character', fun = 'function')
                            , self.name = '.self')

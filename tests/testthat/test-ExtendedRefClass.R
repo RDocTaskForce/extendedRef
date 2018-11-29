@@ -2,7 +2,7 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `ExtendedRefClass.R`')
-#line 33 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
+#line 33 "R/ExtendedRefClass.R"
 test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     bare <- new('extendedRefClassDefinition')
     expect_null(bare@private.library)
@@ -16,7 +16,7 @@ test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     expect_null(triad$methods)
     expect_null(triad$const)
 })
-#line 46 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
+#line 46 "R/ExtendedRefClass.R"
 test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
     if (exists(classMetaName('test'), where = globalenv()))
         try(removeClass('test', where = globalenv()), silent = TRUE)
@@ -60,7 +60,7 @@ test_that('setClass("extendedRefClassDefinition", ...)', {#@testing
 
     removeClass(ref_generator@className, where = globalenv())
 })
-#line 176 "C:/rdtf/extendedRef/R/ExtendedRefClass.R"
+#line 176 "R/ExtendedRefClass.R"
 test_that('extendedRefObjectGenerator', {#@testing extendedRefObjectGenerator
     if (exists(classMetaName('test')))
         try(removeClass('test'), TRUE)
