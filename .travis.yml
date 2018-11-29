@@ -20,5 +20,4 @@ before_script:
   - Rscript -e 'testextra::extract_tests()'
 
 after_success:
-  - travis-conditions eval "r = release"
   - Rscript -e 'covr::codecov()'

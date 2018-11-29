@@ -66,7 +66,8 @@ if(FALSE){#@testing
 
     expect_identical(x$.self, x)
 
-    expect_error(x$"not a valid name", "is not a valid static variable or method\\.")
+    expect_is(x, 'StaticTriad')
+    expect_error(x$"not a valid name")
 }
 
 #' @rdname StaticTriad-class
