@@ -58,7 +58,7 @@ if(FALSE){#@testing
     expect_identical(x$const, const)
     expect_identical(L$x$const, x$const)
 
-    expect_error(x$junk, ".junk. is not a valid static variable or method\\.")
+    expect_error(x$"not a valid name", ".not a valid name. is not a valid static variable or method\\.")
 }
 
 #' @rdname StaticTriad-class
