@@ -129,8 +129,6 @@ function(.Object, ...){
                           )
         attr(private.env@.xData, 'name') <- 'object private variables'
         parent <- insert_parent_env(.Object, private.env)
-        if (is.function(private.env@initializer))
-            private.env@initializer()
     }
     if (!is.null(classDef@private.library)) {
         private.methods <- private_methods(.Object)
@@ -144,10 +142,9 @@ function(.Object, ...){
         }
     }
     attr(.Object, 'extended.initialized') <- TRUE
-    # validObject(.Object)
+    validObject(.Object)
     return(.Object)
 })
-
 
 # extendedRefObjectGenerator --------
 #' Extended Reference Generators

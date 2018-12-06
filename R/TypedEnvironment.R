@@ -57,9 +57,6 @@ function( .Object
     if (!is.null(initializer)) {
         environment(initializer) <- .Object@.xData
         .Object@initializer <- initializer
-        if (initialize.content) {
-            .Object@initializer()
-        }
     }
     .Object@classes <- classes
 
@@ -73,6 +70,9 @@ function( .Object
         lockBinding(self.name, .Object@.xData)
     }
     lockEnvironment(.Object@.xData, bindings=FALSE)
+    if (initialize.content) {
+        .Object@initializer()
+    }
     return(.Object)
 })
 # @testing ####
@@ -117,4 +117,15 @@ if(FALSE){#@testing
     expect_identical(winit$int, 101L)
     expect_identical(winit$char, 'y')
     expect_identical(winit$.self, winit)
+
+    expect_is( winit2<- new('TypedEnvironment'
+                           , c(int = 'integer', char = 'character')
+                           , self.name = '.self'
+                           , initializer = initializer
+                           , initialize.content = TRUE
+                           )
+             , 'TypedEnvironment')
+    expect_identical(winit2$int, 101L)
+    expect_identical(winit2$char, 'y')
+    expect_identical(winit2$.self, winit2)
 }

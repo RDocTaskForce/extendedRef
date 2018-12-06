@@ -56,7 +56,7 @@ setMethod('initialize', 'MethodsLibrary',
 function(.Object
         , methods=list()
         , method.type='refMethodDef'
-        , method.parent=as.environment(.Object)
+        , method.parent=NULL
         , parent = NULL
         , ... #< passed to `new(method.type, ...)`
         , .lock = length(methods) > 0L
@@ -123,4 +123,11 @@ if(FALSE){#@testing
     expect_identical(environment(copy$say_hi), emptyenv())
     expect_false(exists('.self', copy))
     expect_true(environmentIsLocked(copy))
+
+
+    lib2 <- new('MethodsLibrary'
+               , list(say_hi = function()cat('hi\n'))
+               , .lock=FALSE
+               )
+    expect_identical(environment(lib2$say_hi), lib2@.xData)
 }
