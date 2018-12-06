@@ -38,8 +38,7 @@ setMethod('$', 'StaticTriad', function(x, name){
     if (!is.null(vars   ) && exists(name, vars   )) return(get(name, vars   )) else
     if (!is.null(const  ) && exists(name, const  )) return(get(name, const  )) else
     if (exists(name, x, inherits = FALSE)) return(get(name, x)) else
-    tryCatch( callNextMethod(x, name=name)
-                    # envRefInferField(x, what, getClass(class(x)), selfEnv)
+    withCallingHandlers( callNextMethod(x, name=name)
             , error = function(e){
                 if (grepl("^.name. is not a valid field or method name for reference class .StaticTriad."
                          , conditionMessage(e)))
@@ -48,24 +47,31 @@ setMethod('$', 'StaticTriad', function(x, name){
 })
 if(FALSE){#@testing
     x <- new('StaticTriad')
-    const <- static_const(list(a=1))
-    x$const <- const
-    x$vars  <- new_static_env(c(int = 'integer'), parent=globalenv())
-    x$methods <- static_methods(list(say_hi = function()cat('hi\n')), parent = globalenv())
+    x$const   <- const   <- static_const(list(a=1))
+    x$vars    <- vars    <- new_static_env(c(int = 'integer'), parent=globalenv())
+    x$methods <- methods <- static_methods(list(say_hi = function()cat('hi\n')), parent = globalenv())
 
     L <- list(x=x)
 
-    expect_identical(x$const, const)
-    expect_identical(L$x$const, x$const)
+    expect_identical(x$const  , const)
+    expect_identical(x$vars   , vars)
+    expect_identical(x$methods, methods)
+    expect_identical(L$x$const  , x$const)
+    expect_identical(L$x$vars   , x$vars)
+    expect_identical(L$x$methods, x$methods)
 
-    expect_error(x$junk, ".junk. is not a valid static variable or method\\.")
+    expect_identical(x$int, integer(0))
+    expect_identical(x$a, 1)
+    expect_is(x$say_hi, 'function')
+
+    expect_identical(x$.self, x)
+
+    expect_is(x, 'StaticTriad')
+    expect_error(x$"not a valid name")
 }
 
 #' @rdname StaticTriad-class
 setMethod('$<-', 'StaticTriad', function(x, name, value){
-    what <- substitute(name)
-    if (is.symbol(what))
-        name <- as.character(what)
     if (name %in% names(x)){
         assign(name, value, envir = x@.xData)
         return (invisible(x))

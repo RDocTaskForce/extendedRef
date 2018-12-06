@@ -41,7 +41,7 @@ function( element
     if ('initialize' %!in% names(methods))
         methods[["initialize"]] <- function(...) { if (nargs()) .self$add(...) }
     if ('validate' %!in% names(methods))
-        methods[['validate']] <- function(){validate_that(all(are(., element)))}
+        methods[['validate']] <- function(){validate_that(all(sapply(., is, element)))}
     if ('is_valid' %!in% names(methods))
         methods[['is_valid']] <- function(){
             valid <- .self$validate()
@@ -55,7 +55,7 @@ function( element
                 if (!is(l[[i]], element))
                     try(l[[i]] <- as(l[[i]], element))
             }
-            pkgcond::assert_that(all(testextra::are(l, element)))
+            pkgcond::assert_that(all(sapply(l, is, element)))
             . <<- c(., l)
             invisible(.self)
         }
@@ -176,7 +176,7 @@ function( element
                )
     if (!('validate' %in% names(methods)))
         methods[['validate']] <- function(){
-            assertthat::validate_that( all(testextra::are(., element))
+            assertthat::validate_that( all(sapply(., is, element))
                                      , !anyDuplicated(.)
                                      )
         }
@@ -197,7 +197,7 @@ function( element
                     l <- l[-i]
                 }
             }
-            pkgcond::assert_that( all(testextra::are(l, element))
+            pkgcond::assert_that( all(sapply(l, is, element))
                                 , !anyDuplicated(l))
             l <- c(., l)
             . <<- l

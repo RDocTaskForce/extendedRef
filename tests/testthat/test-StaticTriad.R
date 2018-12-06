@@ -2,22 +2,32 @@
 #! Changes will be overwritten.
 
 context('tests extracted from file `StaticTriad.R`')
-#line 49 "R/StaticTriad.R"
+#line 48 "R/StaticTriad.R"
 test_that('$,StaticTriad-method', {#@testing
     x <- new('StaticTriad')
-    const <- static_const(list(a=1))
-    x$const <- const
-    x$vars  <- new_static_env(c(int = 'integer'), parent=globalenv())
-    x$methods <- static_methods(list(say_hi = function()cat('hi\n')), parent = globalenv())
+    x$const   <- const   <- static_const(list(a=1))
+    x$vars    <- vars    <- new_static_env(c(int = 'integer'), parent=globalenv())
+    x$methods <- methods <- static_methods(list(say_hi = function()cat('hi\n')), parent = globalenv())
 
     L <- list(x=x)
 
-    expect_identical(x$const, const)
-    expect_identical(L$x$const, x$const)
+    expect_identical(x$const  , const)
+    expect_identical(x$vars   , vars)
+    expect_identical(x$methods, methods)
+    expect_identical(L$x$const  , x$const)
+    expect_identical(L$x$vars   , x$vars)
+    expect_identical(L$x$methods, x$methods)
 
-    expect_error(x$junk, ".junk. is not a valid static variable or method\\.")
+    expect_identical(x$int, integer(0))
+    expect_identical(x$a, 1)
+    expect_is(x$say_hi, 'function')
+
+    expect_identical(x$.self, x)
+
+    expect_is(x, 'StaticTriad')
+    expect_error(x$"not a valid name")
 })
-#line 88 "R/StaticTriad.R"
+#line 94 "R/StaticTriad.R"
 test_that('$<-,StaticTriad-method', {#@testing
     x <- new('StaticTriad')
     x$const <- static_const(list(a=1))

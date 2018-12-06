@@ -80,7 +80,7 @@ if(FALSE){#@testing
     expect_is(bare <- new('TypedEnvironment'), 'TypedEnvironment')
     expect_identical(ls(bare, all=TRUE), character())
     expect_null(bare@initializer)
-    testextra::expect_valid(bare)
+    expect_true(validObject(bare, test=TRUE))
 
     expect_is( typed <- new('TypedEnvironment', c(int = 'integer', char = 'character', fun = 'function'))
              , 'TypedEnvironment')
@@ -89,7 +89,7 @@ if(FALSE){#@testing
     expect_identical(typed$char, character())
     expect_identical(typed$fun, new('function'))
     expect_null(typed@initializer)
-    expect_valid(typed)
+    expect_true(validObject(typed, test=TRUE))
 
     expect_is( named <- new('TypedEnvironment', c(int = 'integer', char = 'character', fun = 'function')
                            , self.name = '.self')

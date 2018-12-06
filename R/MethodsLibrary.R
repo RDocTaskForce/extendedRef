@@ -34,8 +34,8 @@ setClass( 'MethodsLibrary'
 setValidity('MethodsLibrary', function(object){
   list.object <- as.list(object)
   if (length(list.object) == 0) return(TRUE)
-  are.valid <- are(list.object, object@method.type) &
-               are_valid(list.object, simplify=TRUE)
+  are.valid <- sapply(list.object, is, object@method.type) &
+               sapply(lapply(list.object, validObject, test = TRUE), isTRUE)
   if (all(are.valid)) return(TRUE)
   for (i in which(!are.valid)){
       if ( is.environment(list.object[[i]])
@@ -72,7 +72,7 @@ function(.Object
         methods <- if (is.environment(methods)) as.list(methods, all=TRUE) else as.list(methods)
         methods <- methods[!sapply(methods, is.environment)]
     }
-    assert_that(all_inherit(methods, 'function'))
+    assert_that(all(sapply(methods, is.function)))
     if (length(methods)==0) return(.Object)
     else assert_that(rlang::is_dictionaryish(methods))
 
@@ -93,7 +93,7 @@ function(.Object
 # __+ testing ####
 if(FALSE){#@testing
     expect_is(lib <- new('MethodsLibrary'), 'MethodsLibrary')
-    testextra::expect_valid(lib)
+    expect_true(validObject(lib, test=TRUE))
 
     parent <- s(new.env(), name = 'test methods parent')
 
@@ -104,11 +104,11 @@ if(FALSE){#@testing
               )
     expect_length(ls(lib, all=TRUE), 1L)
     expect_identical(environment(lib$say_hi), parent)
-    testextra::expect_valid(lib)
+    expect_true(validObject(lib, test=TRUE))
 
     expect_false(environmentIsLocked(lib))
     assign('.self', lib, envir=lib@.xData)
-    testextra::expect_valid(lib)
+    expect_true(validObject(lib, test=TRUE))
 
     assign('say_goodby', 'goodby', envir=lib@.xData)
     expect_error( validObject(lib), "Element say_goodby is not a valid refMethodDef object")

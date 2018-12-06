@@ -5,7 +5,7 @@ context('tests extracted from file `MethodsLibrary.R`')
 #line 94 "R/MethodsLibrary.R"
 test_that('initialize,MethodsLibrary-method', {#@testing
     expect_is(lib <- new('MethodsLibrary'), 'MethodsLibrary')
-    testextra::expect_valid(lib)
+    expect_true(validObject(lib, test=TRUE))
 
     parent <- s(new.env(), name = 'test methods parent')
 
@@ -16,11 +16,11 @@ test_that('initialize,MethodsLibrary-method', {#@testing
               )
     expect_length(ls(lib, all=TRUE), 1L)
     expect_identical(environment(lib$say_hi), parent)
-    testextra::expect_valid(lib)
+    expect_true(validObject(lib, test=TRUE))
 
     expect_false(environmentIsLocked(lib))
     assign('.self', lib, envir=lib@.xData)
-    testextra::expect_valid(lib)
+    expect_true(validObject(lib, test=TRUE))
 
     assign('say_goodby', 'goodby', envir=lib@.xData)
     expect_error( validObject(lib), "Element say_goodby is not a valid refMethodDef object")
