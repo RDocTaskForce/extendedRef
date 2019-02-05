@@ -41,7 +41,9 @@ function( element
     if ('initialize' %!in% names(methods))
         methods[["initialize"]] <- function(...) { if (nargs()) .self$add(...) }
     if ('validate' %!in% names(methods))
-        methods[['validate']] <- function(){validate_that(all(sapply(., is, element)))}
+        methods[['validate']] <- function(){
+            validate_that(all(sapply(., is, element)))
+        }
     if ('is_valid' %!in% names(methods))
         methods[['is_valid']] <- function(){
             valid <- .self$validate()
@@ -64,9 +66,13 @@ function( element
     if ('set' %!in% names(methods))
         methods[['set']] <- function(..., value){.[[...]] <<- value; invisible(.self)}
     if ('length' %!in% names(methods))
-        methods[['length']] <- function(x){if(missing(x)) base::length(.) else base::length(x)}
+        methods[['length']] <- function(x){
+            if(missing(x)) base::length(.) else base::length(x) # nocov
+        }
     if ('names' %!in% names(methods))
-        methods[['names']]  <- function(x){if(missing(x)) base::names(.)  else base::names(x)}
+        methods[['names']]  <- function(x){
+            if(missing(x)) base::names(.)  else base::names(x) # nocov
+            }
     if (assert_that("element" %!in% names(static.const)))
         static.const <- c(static.const, element=element)
     if ('as.list' %!in% names(methods))
@@ -80,7 +86,7 @@ function( element
                            , private=private
                            , ..., where=where)
     setValidity(Class, function(object){
-        if (!isTRUE(attr(object@.xData, 'extended.initialized'))) return(TRUE)
+        if (!isTRUE(attr(object, 'extended.initialized'))) return(TRUE)
         object$validate()
     }, where=where)
 
@@ -102,6 +108,8 @@ if(FALSE){#@testing
                     , c('.__initialize__.', '.private.methods.library'))
 
     bare <- test_vector()
+    validObject(bare)
+
     expect_is(bare, "ReferenceVector<logical>")
     expect_length(bare, 0L)
     expect_identical(get('element', bare), 'logical')
@@ -115,9 +123,16 @@ if(FALSE){#@testing
     expect_identical(val[[2]], FALSE)
     expect_identical(val[['b']], FALSE)
 
+    expect_identical(names(val), c('a','b'))
+    expect_identical(val$names(), c('a','b'))
+
+    expect_true(validObject(val, test=TRUE))
+    expect_true(val$validate())
+
     new <- c(c=NA)
     val$add(c=NA)
     expect_length(val, 3L)
+    expect_equal(length(val), val$length())
     expect_identical(val[[3]], NA)
 
     expect_true(val$is_valid())
@@ -236,7 +251,7 @@ if(FALSE){#@testing
                          , where = globalenv()
                          , static.methods = list(
                              equals = function(x, y) x@name == y@name
-                            )
+                             )
                          )
 
     expect_is(test_set, 'refObjectGenerator')
@@ -263,6 +278,33 @@ if(FALSE){#@testing
     my.set$add(test_class(name='another'))
     expect_length(my.set, 2L)
 
+    expect_true(validObject(my.set, TRUE))
+
     expect_true(removeClass("test-element", globalenv()))
     expect_true(removeClass("ReferenceSet<test-element>", globalenv()))
 }
+if(FALSE){#@testing setRefSet edge cases
+    integer_set <-
+        setRefSet('integer'
+                 , methods = list(
+                     sort = function(){. <<- .[base::order(unlist(.))]}
+                 )
+                 , where = globalenv())
+
+    idx <- integer_set()
+
+    idx$add(3)
+    expect_identical(idx$as.list(), list(3L))
+
+    idx$add(1)
+    expect_identical(idx$as.list(), list(1L, 3L))
+
+    expect_message( idx$add(3L)
+                  , "^Set already contains the element given at position 1\\.$"
+                  )
+
+    expect_true(removeClass("ReferenceSet<integer>", globalenv()))
+}
+
+
+

@@ -52,7 +52,7 @@ function( Class
         , warning = function(e){
             if (grepl('non-local assignment to non-field names (possibly misspelled?)', e$message, fixed=TRUE))
                 invokeRestart("muffleWarning")
-            else warning(e)
+            else warning(e) # nocov
         })
     ref.class <- generator$def
 
@@ -175,6 +175,25 @@ if(FALSE){#@testing static (ExtendedRefClass) #####
     expect_identical(environmentName(static), "test with static Static Environment")
     expect_identical(parent.env(static), globalenv())
     expect_identical(get('count', object), integer())
+
+    # with static initializer as slot
+    def <- gen$def
+    static.env <- def@static
+    def@static$static.initialized <- FALSE
+    def@static@initializer <- function(){
+        count <<- 0L
+    }
+    environment(def@static@initializer) <- gen$def@static@.xData
+    assignClassDef(gen@className, def, where=globalenv())
+
+    expect_identical(getClassDef(gen@className), def)
+    expect_is(getClassDef(gen@className)@static@initializer, 'function')
+    expect_false(getClassDef(gen@className)@static$static.initialized)
+
+    obj <- gen()
+
+    expect_true(getClassDef(gen@className)@static$static.initialized)
+    expect_identical(getClassDef(gen@className)@static$count, 0L)
 
     expect_true(removeClass("test with static"))
 }
@@ -360,12 +379,12 @@ if(FALSE){#@testing with all (ExtendedRefClass) #####
     expect_identical(object$count, 1L)
 
     expect_identical(get('element', object), 'logical')
-    testextra::expect_valid(object)
+    expect_true(validObject(object, test=TRUE))
 
     expect_identical( object$append(FALSE, FALSE, TRUE)@.xData
                  , invisible(object)@.xData
                  )
-    testextra::expect_valid(object)
+    expect_true(validObject(object, test=TRUE))
 
     expect_error(object$append(0L), "Elements 1 of sapply\\(l, is, element\\) are not true")
     expect_length(object$., 5L)

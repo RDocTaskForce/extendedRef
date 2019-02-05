@@ -40,7 +40,7 @@ setMethod('$', 'StaticTriad', function(x, name){
     if (exists(name, x, inherits = FALSE)) return(get(name, x)) else
     withCallingHandlers( callNextMethod(x, name=name)
             , error = function(e){
-                if (grepl("^.name. is not a valid field or method name for reference class .StaticTriad."
+                if (grepl("^.{1,4}name.{1,4} is not a valid field or method name for reference class .{1,4}StaticTriad.{1,4}$"
                          , conditionMessage(e)))
                     pkg_error(._("%s is not a valid static variable or method.", sQuote(name) ))
             })
@@ -67,7 +67,8 @@ if(FALSE){#@testing
     expect_identical(x$.self, x)
 
     expect_is(x, 'StaticTriad')
-    expect_error(x$"not a valid name")
+    expect_error(x$"not a valid name"
+                , "not a valid static variable or method\\.$")
 }
 
 #' @rdname StaticTriad-class

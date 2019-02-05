@@ -14,7 +14,6 @@ knitr::opts_chunk$set(
 )
 library(extendedRef)
 library(assertthat)
-library(testextra)
 ```
 # extendedRef - Extended Reference Classes <img src="man/figures/logo.png" align="right" height=140/>
 [![Build Status](https://travis-ci.org/RDocTaskForce/extendedRef.svg?branch=master)](https://travis-ci.org/RDocTaskForce/extendedRef)

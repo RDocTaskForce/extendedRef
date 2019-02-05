@@ -49,10 +49,10 @@ set_environment <- function(fun, envir){
     return(fun)
 }
 
-
+# nocov start
 ._not_implemented <- function(object, ...)
-    stop("not implimented for class", paste(class(object)), collapse='/') # nocov
-
+    stop("not implimented for class", paste(class(object)), collapse='/')
+# nocov end
 
 `%!in%` <- Negate(`%in%`)
 

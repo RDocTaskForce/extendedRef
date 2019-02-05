@@ -57,9 +57,6 @@ function( .Object
     if (!is.null(initializer)) {
         environment(initializer) <- .Object@.xData
         .Object@initializer <- initializer
-        if (initialize.content) {
-            .Object@initializer()
-        }
     }
     .Object@classes <- classes
 
@@ -73,6 +70,9 @@ function( .Object
         lockBinding(self.name, .Object@.xData)
     }
     lockEnvironment(.Object@.xData, bindings=FALSE)
+    if (initialize.content) {
+        .Object@initializer()
+    }
     return(.Object)
 })
 # @testing ####
@@ -80,7 +80,7 @@ if(FALSE){#@testing
     expect_is(bare <- new('TypedEnvironment'), 'TypedEnvironment')
     expect_identical(ls(bare, all=TRUE), character())
     expect_null(bare@initializer)
-    testextra::expect_valid(bare)
+    expect_true(validObject(bare, test=TRUE))
 
     expect_is( typed <- new('TypedEnvironment', c(int = 'integer', char = 'character', fun = 'function'))
              , 'TypedEnvironment')
@@ -89,7 +89,7 @@ if(FALSE){#@testing
     expect_identical(typed$char, character())
     expect_identical(typed$fun, new('function'))
     expect_null(typed@initializer)
-    testextra::expect_valid(typed)
+    expect_true(validObject(typed, test=TRUE))
 
     expect_is( named <- new('TypedEnvironment', c(int = 'integer', char = 'character', fun = 'function')
                            , self.name = '.self')
@@ -117,4 +117,15 @@ if(FALSE){#@testing
     expect_identical(winit$int, 101L)
     expect_identical(winit$char, 'y')
     expect_identical(winit$.self, winit)
+
+    expect_is( winit2<- new('TypedEnvironment'
+                           , c(int = 'integer', char = 'character')
+                           , self.name = '.self'
+                           , initializer = initializer
+                           , initialize.content = TRUE
+                           )
+             , 'TypedEnvironment')
+    expect_identical(winit2$int, 101L)
+    expect_identical(winit2$char, 'y')
+    expect_identical(winit2$.self, winit2)
 }
