@@ -1,5 +1,6 @@
 
 export(new_static_env)
+export(make_class_optional)
 export(private_methods)
 export(privateMethodsLibrary)
 export(setExtendedRefClass)

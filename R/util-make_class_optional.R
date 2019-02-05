@@ -1,3 +1,10 @@
+
+#' Convert a normal class into an optional class.
+#'
+#' This will create a new class based off the given class
+#' where NULL is an acceptable value for the given entry.
+#' This creates a new class so that both the original and
+#' the optional version may be used.
 make_class_optional <-
 function( className
         , name = paste0('optional-', className)
