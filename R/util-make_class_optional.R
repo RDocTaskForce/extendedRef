@@ -5,6 +5,11 @@
 #' where NULL is an acceptable value for the given entry.
 #' This creates a new class so that both the original and
 #' the optional version may be used.
+#'
+#' @param className the class to make optional
+#' @param name the name of the resulting class union
+#' @param where where to save the new class definition
+#'
 make_class_optional <-
 function( className
         , name = paste0('optional-', className)
