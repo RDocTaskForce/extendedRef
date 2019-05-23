@@ -104,7 +104,7 @@ if(FALSE){#@testing
 
     expect_is(def <- test_vector$def, 'extendedRefClassDefinition')
     expect_identical(def@private.classes, c(.='list'))
-    expect_identical( ls(def@private.library, all=TRUE)
+    expect_identical( ls(def@private.library, all.names = TRUE)
                     , c('.__initialize__.', '.private.methods.library'))
 
     bare <- test_vector()

@@ -102,7 +102,7 @@ if(FALSE){#@testing
               , method.parent = parent
               , .lock=FALSE
               )
-    expect_length(ls(lib, all=TRUE), 1L)
+    expect_length(ls(lib, all.names = TRUE), 1L)
     expect_identical(environment(lib$say_hi), parent)
     expect_true(validObject(lib, test=TRUE))
 

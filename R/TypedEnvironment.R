@@ -78,13 +78,13 @@ function( .Object
 # @testing ####
 if(FALSE){#@testing
     expect_is(bare <- new('TypedEnvironment'), 'TypedEnvironment')
-    expect_identical(ls(bare, all=TRUE), character())
+    expect_identical(ls(bare, all.names = TRUE), character())
     expect_null(bare@initializer)
     expect_true(validObject(bare, test=TRUE))
 
     expect_is( typed <- new('TypedEnvironment', c(int = 'integer', char = 'character', fun = 'function'))
              , 'TypedEnvironment')
-    expect_identical(ls(typed, all=TRUE), c('char', 'fun', 'int'))
+    expect_identical(ls(typed, all.names = TRUE), c('char', 'fun', 'int'))
     expect_identical(typed$int, integer())
     expect_identical(typed$char, character())
     expect_identical(typed$fun, new('function'))
@@ -94,7 +94,7 @@ if(FALSE){#@testing
     expect_is( named <- new('TypedEnvironment', c(int = 'integer', char = 'character', fun = 'function')
                            , self.name = '.self')
                , 'TypedEnvironment')
-    expect_identical(ls(named, all=TRUE), c('.self', 'char', 'fun', 'int'))
+    expect_identical(ls(named, all.names = TRUE), c('.self', 'char', 'fun', 'int'))
     expect_identical(named$.self, named)
 
     initializer <- function(){
@@ -109,7 +109,7 @@ if(FALSE){#@testing
                            , initializer = initializer
                            )
              , 'TypedEnvironment')
-    expect_identical(ls(winit, all=TRUE), c('.self', 'char', 'int'))
+    expect_identical(ls(winit, all.names = TRUE), c('.self', 'char', 'int'))
     expect_is(winit@initializer, 'function')
     expect_identical(winit$.self, winit)
 

@@ -247,7 +247,7 @@ if(FALSE){#@testing with private (ExtendedRefClass) #####
     expect_is(private <- get('private', object), 'TypedEnvironment')
     expect_identical(parent.env(object), private@.xData)
     expect_identical(parent.env(private), globalenv())
-    expect_identical(ls(private, all=TRUE), c('private','var'))
+    expect_identical(ls(private, all.names = TRUE), c('private','var'))
 
     expect_true(removeClass("test with private"))
 }
@@ -277,7 +277,7 @@ if(FALSE){#@testing private methods (ExtendedRefClass)  #####
     expect_identical(parent.env(pm), private@.xData)
     expect_identical(parent.env(private), globalenv())
     expect_equal(ls(private), c('greeting', 'private'))
-    expect_equal(ls(pm, all=TRUE), 'say_hi')
+    expect_equal(ls(pm, all.names = TRUE), 'say_hi')
     object$set_greeting("Hello")
     expect_error(object$say_hi())
     expect_output(get('say_hi', object)(), 'Hello')
@@ -430,7 +430,7 @@ if(FALSE){#@testing relocated initialize
                             message("Initialization delayed until all environments are created.")
                     }, srcref = NULL)
 
-    expect_identical( ls(def@private.library, all=TRUE)
+    expect_identical( ls(def@private.library, all.names = TRUE)
                     , c('.__initialize__.', '.private.methods.library', 'is_valid')
                     )
     # expect_identical( set_environment(def@refMethods$initialize@.Data, environment())
@@ -444,7 +444,7 @@ if(FALSE){#@testing relocated initialize
 
 
     expect_is(object <- flags(flag(TRUE), flag(FALSE)), 'Vector<flag>')
-    expect_identical( ls(parent.env(object), all=TRUE)
+    expect_identical( ls(parent.env(object), all.names = TRUE)
                     , c('.__initialize__.', 'is_valid')
                     )
     expect_identical(environment(object$initialize@.Data), object@.xData)
